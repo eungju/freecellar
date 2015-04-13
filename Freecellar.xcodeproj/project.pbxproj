@@ -1,0 +1,419 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		09A871B11ADBA8DD009C6308 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09A871B01ADBA8DD009C6308 /* AppDelegate.swift */; };
+		09A871B31ADBA8DD009C6308 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09A871B21ADBA8DD009C6308 /* GameScene.swift */; };
+		09A871B51ADBA8DD009C6308 /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 09A871B41ADBA8DD009C6308 /* GameScene.sks */; };
+		09A871B71ADBA8DD009C6308 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 09A871B61ADBA8DD009C6308 /* Images.xcassets */; };
+		09A871BA1ADBA8DD009C6308 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 09A871B81ADBA8DD009C6308 /* MainMenu.xib */; };
+		09A871C61ADBA8DD009C6308 /* FreecellarTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09A871C51ADBA8DD009C6308 /* FreecellarTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		09A871C01ADBA8DD009C6308 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 09A871A31ADBA8DD009C6308 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 09A871AA1ADBA8DD009C6308;
+			remoteInfo = Freecellar;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		09A871AB1ADBA8DD009C6308 /* Freecellar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Freecellar.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		09A871AF1ADBA8DD009C6308 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		09A871B01ADBA8DD009C6308 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		09A871B21ADBA8DD009C6308 /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
+		09A871B41ADBA8DD009C6308 /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
+		09A871B61ADBA8DD009C6308 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		09A871B91ADBA8DD009C6308 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		09A871BF1ADBA8DD009C6308 /* FreecellarTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FreecellarTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		09A871C41ADBA8DD009C6308 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		09A871C51ADBA8DD009C6308 /* FreecellarTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreecellarTests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		09A871A81ADBA8DD009C6308 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		09A871BC1ADBA8DD009C6308 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		09A871A21ADBA8DD009C6308 = {
+			isa = PBXGroup;
+			children = (
+				09A871AD1ADBA8DD009C6308 /* Freecellar */,
+				09A871C21ADBA8DD009C6308 /* FreecellarTests */,
+				09A871AC1ADBA8DD009C6308 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		09A871AC1ADBA8DD009C6308 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				09A871AB1ADBA8DD009C6308 /* Freecellar.app */,
+				09A871BF1ADBA8DD009C6308 /* FreecellarTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		09A871AD1ADBA8DD009C6308 /* Freecellar */ = {
+			isa = PBXGroup;
+			children = (
+				09A871B01ADBA8DD009C6308 /* AppDelegate.swift */,
+				09A871B21ADBA8DD009C6308 /* GameScene.swift */,
+				09A871B41ADBA8DD009C6308 /* GameScene.sks */,
+				09A871B61ADBA8DD009C6308 /* Images.xcassets */,
+				09A871B81ADBA8DD009C6308 /* MainMenu.xib */,
+				09A871AE1ADBA8DD009C6308 /* Supporting Files */,
+			);
+			path = Freecellar;
+			sourceTree = "<group>";
+		};
+		09A871AE1ADBA8DD009C6308 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				09A871AF1ADBA8DD009C6308 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		09A871C21ADBA8DD009C6308 /* FreecellarTests */ = {
+			isa = PBXGroup;
+			children = (
+				09A871C51ADBA8DD009C6308 /* FreecellarTests.swift */,
+				09A871C31ADBA8DD009C6308 /* Supporting Files */,
+			);
+			path = FreecellarTests;
+			sourceTree = "<group>";
+		};
+		09A871C31ADBA8DD009C6308 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				09A871C41ADBA8DD009C6308 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		09A871AA1ADBA8DD009C6308 /* Freecellar */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 09A871C91ADBA8DD009C6308 /* Build configuration list for PBXNativeTarget "Freecellar" */;
+			buildPhases = (
+				09A871A71ADBA8DD009C6308 /* Sources */,
+				09A871A81ADBA8DD009C6308 /* Frameworks */,
+				09A871A91ADBA8DD009C6308 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Freecellar;
+			productName = Freecellar;
+			productReference = 09A871AB1ADBA8DD009C6308 /* Freecellar.app */;
+			productType = "com.apple.product-type.application";
+		};
+		09A871BE1ADBA8DD009C6308 /* FreecellarTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 09A871CC1ADBA8DD009C6308 /* Build configuration list for PBXNativeTarget "FreecellarTests" */;
+			buildPhases = (
+				09A871BB1ADBA8DD009C6308 /* Sources */,
+				09A871BC1ADBA8DD009C6308 /* Frameworks */,
+				09A871BD1ADBA8DD009C6308 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				09A871C11ADBA8DD009C6308 /* PBXTargetDependency */,
+			);
+			name = FreecellarTests;
+			productName = FreecellarTests;
+			productReference = 09A871BF1ADBA8DD009C6308 /* FreecellarTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		09A871A31ADBA8DD009C6308 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0630;
+				ORGANIZATIONNAME = "Park Eungju";
+				TargetAttributes = {
+					09A871AA1ADBA8DD009C6308 = {
+						CreatedOnToolsVersion = 6.3;
+					};
+					09A871BE1ADBA8DD009C6308 = {
+						CreatedOnToolsVersion = 6.3;
+						TestTargetID = 09A871AA1ADBA8DD009C6308;
+					};
+				};
+			};
+			buildConfigurationList = 09A871A61ADBA8DD009C6308 /* Build configuration list for PBXProject "Freecellar" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 09A871A21ADBA8DD009C6308;
+			productRefGroup = 09A871AC1ADBA8DD009C6308 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				09A871AA1ADBA8DD009C6308 /* Freecellar */,
+				09A871BE1ADBA8DD009C6308 /* FreecellarTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		09A871A91ADBA8DD009C6308 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				09A871B51ADBA8DD009C6308 /* GameScene.sks in Resources */,
+				09A871B71ADBA8DD009C6308 /* Images.xcassets in Resources */,
+				09A871BA1ADBA8DD009C6308 /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		09A871BD1ADBA8DD009C6308 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		09A871A71ADBA8DD009C6308 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				09A871B31ADBA8DD009C6308 /* GameScene.swift in Sources */,
+				09A871B11ADBA8DD009C6308 /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		09A871BB1ADBA8DD009C6308 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				09A871C61ADBA8DD009C6308 /* FreecellarTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		09A871C11ADBA8DD009C6308 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 09A871AA1ADBA8DD009C6308 /* Freecellar */;
+			targetProxy = 09A871C01ADBA8DD009C6308 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		09A871B81ADBA8DD009C6308 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				09A871B91ADBA8DD009C6308 /* Base */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		09A871C71ADBA8DD009C6308 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		09A871C81ADBA8DD009C6308 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		09A871CA1ADBA8DD009C6308 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = Freecellar/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		09A871CB1ADBA8DD009C6308 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = Freecellar/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		09A871CD1ADBA8DD009C6308 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = FreecellarTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Freecellar.app/Contents/MacOS/Freecellar";
+			};
+			name = Debug;
+		};
+		09A871CE1ADBA8DD009C6308 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = FreecellarTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Freecellar.app/Contents/MacOS/Freecellar";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		09A871A61ADBA8DD009C6308 /* Build configuration list for PBXProject "Freecellar" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				09A871C71ADBA8DD009C6308 /* Debug */,
+				09A871C81ADBA8DD009C6308 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		09A871C91ADBA8DD009C6308 /* Build configuration list for PBXNativeTarget "Freecellar" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				09A871CA1ADBA8DD009C6308 /* Debug */,
+				09A871CB1ADBA8DD009C6308 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		09A871CC1ADBA8DD009C6308 /* Build configuration list for PBXNativeTarget "FreecellarTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				09A871CD1ADBA8DD009C6308 /* Debug */,
+				09A871CE1ADBA8DD009C6308 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 09A871A31ADBA8DD009C6308 /* Project object */;
+}
