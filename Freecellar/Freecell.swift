@@ -8,6 +8,8 @@
 
 import Foundation
 
+private let RANK_ORDER: [Rank] = [.Ace, .Two, .Three, .Four, .Five, .Six, .Seven, .Eight, .Nine, .Ten, .Jack, .Queen, .King]
+
 struct Cell {
     let card: Card?
     
@@ -64,9 +66,7 @@ struct Foundation {
     }
 
     private static func allow(card: Card, on top: Card) -> Bool {
-        let order: [Rank] = [.Ace, .Two, .Three, .Four, .Five, .Six, .Seven, .Eight, .Nine, .Ten, .Jack, .Queen, .King]
-        let succ: Int = find(order, top.rank)! + 1
-        return (top.suit == card.suit) && (order.count > succ && order[succ] == card.rank)
+        return (top.suit == card.suit) && (find(RANK_ORDER, top.rank)! + 1 == find(RANK_ORDER, card.rank)!)
     }
 }
 
@@ -102,9 +102,7 @@ struct Cascade {
     }
     
     private static func allow(card: Card, on top: Card) -> Bool {
-        let order: [Rank] = [.Ace, .Two, .Three, .Four, .Five, .Six, .Seven, .Eight, .Nine, .Ten, .Jack, .Queen, .King]
-        let pred: Int = find(order, top.rank)! - 1
-        return alternativeColor(top.suit, card.suit) && (0 <= pred && order[pred] == card.rank)
+        return alternativeColor(top.suit, card.suit) && (find(RANK_ORDER, top.rank)! - 1 == find(RANK_ORDER, card.rank)!)
     }
 
     func take() -> (column: Cascade, card: Card)? {
@@ -138,4 +136,10 @@ struct Freecell {
     func apply(action: Action) -> Freecell? {
         return nil
     }
+}
+
+extension Freecell: Equatable {}
+
+func ==(lhs: Freecell, rhs: Freecell) -> Bool {
+    return lhs.cascades == rhs.cascades && lhs.foundations == rhs.foundations && lhs.cells == rhs.cells
 }
