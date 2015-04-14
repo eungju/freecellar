@@ -9,6 +9,7 @@
 import Foundation
 
 private let RANK_ORDER: [Rank] = [.Ace, .Two, .Three, .Four, .Five, .Six, .Seven, .Eight, .Nine, .Ten, .Jack, .Queen, .King]
+private let SUIT_ORDER: [Suit] = [.Spade, .Diamond, .Heart, .Club]
 
 struct Cell {
     let card: Card?
@@ -132,6 +133,23 @@ struct Freecell {
     let cascades: [Cascade]
     let foundations: [Foundation]
     let cells: [Cell]
+    
+    init() {
+        foundations = [Foundation](count: 4, repeatedValue: Foundation([]))
+        cells = [Cell](count: 4, repeatedValue: Cell())
+        var deck: [Card] = []
+        for suit in SUIT_ORDER {
+            for rank in RANK_ORDER {
+                deck.append(Card(rank, suit))
+            }
+        }
+        cascades = (0..<8).map({ i in
+            let height = i < 4 ? 7 : 6
+            let cascade = Cascade(Array(deck[0..<height]))
+            deck.removeRange(0..<height)
+            return cascade
+        })
+    }
     
     func apply(action: Action) -> Freecell? {
         return nil

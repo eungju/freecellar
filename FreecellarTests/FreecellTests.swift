@@ -99,8 +99,19 @@ class CascadeTests: XCTestCase {
 }
 
 class FreecellTests: XCTestCase {
+    func testInitialization() {
+        let freecell = Freecell()
+        XCTAssertEqual(freecell.cascades.count, 8)
+        XCTAssertEqual(freecell.cascades[0].cards.count, 7)
+        XCTAssertEqual(freecell.cascades[3].cards.count, 7)
+        XCTAssertEqual(freecell.cascades[4].cards.count, 6)
+        XCTAssertEqual(freecell.cascades[7].cards.count, 6)
+        XCTAssertNotEqual(freecell.cascades[0], freecell.cascades[1])
+        XCTAssertEqual(freecell.foundations.count, 4)
+        XCTAssertEqual(freecell.cells.count, 4)
+    }
     func testLegalMove() {
-        let freecell = Freecell(cascades: [Cascade([_AS])], foundations: [], cells: [])
+//        let freecell = Freecell(cascades: [Cascade([_AS])], foundations: [], cells: [])
 //        XCTAssertEqual(freecell.apply(.MoveCard(from: ((.Cascade), 0), to: (.Foundation, 0)))!, Freecell(cascades: [Cascade([])], foundations: [Foundation([_AS])], cells: []))
     }
 }
