@@ -33,19 +33,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @IBOutlet weak var skView: SKView!
     
     func applicationDidFinishLaunching(aNotification: NSNotification) {
-        /* Pick a size for the scene */
-        if let scene = GameScene.unarchiveFromFile("GameScene") as? GameScene {
-            /* Set the scale mode to scale to fit the window */
-            scene.scaleMode = .AspectFill
-            
-            self.skView!.presentScene(scene)
-            
-            /* Sprite Kit applies additional optimizations to improve rendering performance */
-            self.skView!.ignoresSiblingOrder = true
-            
-            self.skView!.showsFPS = true
-            self.skView!.showsNodeCount = true
-        }
+        let scene = GameScene(size: skView.bounds.size)
+        scene.scaleMode = .ResizeFill
+        skView.showsFPS = true
+        skView.showsNodeCount = true
+        skView.ignoresSiblingOrder = true
+        skView.presentScene(scene)
     }
     
     func applicationShouldTerminateAfterLastWindowClosed(sender: NSApplication) -> Bool {

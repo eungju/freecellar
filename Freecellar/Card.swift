@@ -24,6 +24,33 @@ struct Card {
         self.rank = rank
         self.suit = suit
     }
+    
+    var name: String {
+        get {
+            let RANKS: Dictionary<Rank, String> = [
+                .Ace: "A",
+                .Two: "2",
+                .Three: "3",
+                .Four: "4",
+                .Five: "5",
+                .Six: "6",
+                .Seven: "7",
+                .Eight: "8",
+                .Nine: "9",
+                .Ten: "10",
+                .Jack: "J",
+                .Queen: "Q",
+                .King: "K"
+            ]
+            let SUITS: Dictionary<Suit, String> = [
+                .Spade: "S",
+                .Diamond: "D",
+                .Heart: "H",
+                .Club: "C",
+            ]
+            return RANKS[rank]! + SUITS[suit]!
+        }
+    }
 }
 
 extension Card: Equatable {}
