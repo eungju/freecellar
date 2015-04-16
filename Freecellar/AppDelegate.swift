@@ -40,6 +40,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         skView.showsNodeCount = true
         skView.ignoresSiblingOrder = true
         skView.presentScene(scene)
+
+        window.acceptsMouseMovedEvents = true
+        window.makeFirstResponder(scene)
     }
     
     func applicationShouldTerminateAfterLastWindowClosed(sender: NSApplication) -> Bool {
