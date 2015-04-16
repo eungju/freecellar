@@ -7,20 +7,99 @@
 //
 
 import SpriteKit
+import CoreGraphics
+
+class CardNode: SKSpriteNode {
+    let card: Card
+    
+    init(card: Card, frontTexture: SKTexture) {
+        self.card = card
+        super.init(texture: frontTexture, color: nil, size: CGSizeMake(372, 526))
+        texture = frontTexture
+        name = "card-" + card.name
+        zPosition = 1
+    }
+    
+    required init(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+class ColumnNode: SKShapeNode {
+    let columnType: ColumnType
+    
+    init(columnType: ColumnType) {
+        self.columnType = columnType
+        super.init()
+        let border = SKShapeNode()
+        var path = CGPathCreateMutable()
+        CGPathAddRoundedRect(path, nil, CGRectInset(CGRect(origin: CGPointMake(113 * -0.5, 157 * -0.5), size: CGSizeMake(113, 157)), 2, 2), 4, 4)
+        self.path = path
+        self.lineWidth = 2
+        self.fillColor = SKColor(red: 0, green: 0.35, blue: 0.1, alpha: 1)
+        self.strokeColor = SKColor(red: 0, green: 0.3, blue: 0.1, alpha: 1)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+class CellNode: ColumnNode {
+    init(index: Int) {
+        super.init(columnType: .Cell)
+        name = "cell-\(index)"
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+class FoundationNode: ColumnNode {
+    init(index: Int) {
+        super.init(columnType: .Foundation)
+        name = "foundation-\(index)"
+        let a = SKLabelNode(text: "A")
+        a.fontSize = frame.width
+        a.fontColor = SKColor(red: 0, green: 0.4, blue: 0.1, alpha: 1)
+        a.verticalAlignmentMode = .Center
+        addChild(a)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+class CascadeNode: ColumnNode {
+    init(index: Int) {
+        super.init(columnType: .Cascade)
+        name = "cascade-\(index)"
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+struct Hand {
+    let node: CardNode
+    let originalPosition: CGPoint
+}
 
 class GameScene: SKScene {
     let table = SKSpriteNode()
-    var hand: SKNode?
+    var freecell = Freecell()
+    var hand: Hand?
     
     override func didMoveToView(view: SKView) {
         backgroundColor = SKColor.grayColor()
         let tablePadding = CGSizeMake(38, 38)
-        let columnSpace = CGSizeMake(10, 20)
+        let columnSpace = CGSizeMake(10, 30)
         let cardSpace = CGSizeMake(14, 24)
         let cardSize = CGSizeMake(113, 157)
-        let markSize = CGSizeMake(113 - 4, 157 - 4)
 
-        let freecell = Freecell()
         let cellSize = cardSize
         let foundationSize = cardSize
         let cascadeSize = CGSizeMake(cardSize.width, cardSize.height + cardSpace.height * (7 - 1))
@@ -37,63 +116,56 @@ class GameScene: SKScene {
         addChild(table)
 
         let cardFront = CardFront()
-        var cursor = CGPointZero
 
-        let markPrototype = SKShapeNode(rectOfSize: markSize, cornerRadius: 4)
-        markPrototype.lineWidth = 2
-        markPrototype.fillColor = SKColor(red: 0, green: 0.35, blue: 0.1, alpha: 1)
-        markPrototype.strokeColor = SKColor(red: 0, green: 0.3, blue: 0.1, alpha: 1)
-        
-        cursor = cellOrigin
         for (index, cell) in enumerate(freecell.cells) {
-            let mark = markPrototype.copy() as! SKShapeNode
-            mark.name = "cell-mark-\(index)"
-            mark.position = cursor
+            let mark = CellNode(index: index)
+            mark.position = CGPointApplyAffineTransform(cellOrigin, CGAffineTransformMakeTranslation((cellSize.width + columnSpace.width) * CGFloat(index), 0))
             table.addChild(mark)
-            cursor.x += columnSpace.width + cellSize.width
-            cursor.y = cellOrigin.y
         }
 
-        cursor = foundationOrigin
         for (index, foundation) in enumerate(freecell.foundations) {
-            let mark = markPrototype.copy() as! SKShapeNode
-            mark.name = "foundation-mark-\(index)"
-            mark.position = cursor
-            let a = SKLabelNode(text: "A")
-            a.fontSize = cardSize.width
-            a.fontColor = SKColor(red: 0, green: 0.4, blue: 0.1, alpha: 1)
-            a.verticalAlignmentMode = .Center
-            mark.addChild(a)
+            let mark = FoundationNode(index: index)
+            mark.position = CGPointApplyAffineTransform(foundationOrigin, CGAffineTransformMakeTranslation((foundationSize.width + columnSpace.width) * CGFloat(index), 0))
             table.addChild(mark)
-            cursor.x += columnSpace.width + foundationSize.width
-            cursor.y = foundationOrigin.y
         }
 
-        cursor = cascadeOrigin
         for (index, cascade) in enumerate(freecell.cascades) {
-            let mark = markPrototype.copy() as! SKShapeNode
-            mark.name = "cascade-mark-\(index)"
-            mark.position = cursor
+            let mark = CascadeNode(index: index)
+            mark.position = CGPointApplyAffineTransform(cascadeOrigin, CGAffineTransformMakeTranslation((cascadeSize.width + columnSpace.width) * CGFloat(index), 0))
             table.addChild(mark)
-            for card in cascade.cards {
-                let front = SKSpriteNode(texture: cardFront.texture(card.name), color: nil, size: CGSizeMake(372.0, 526.0))
-                front.name = "card-" + card.name
-                front.position = cursor
+            for (row, card) in enumerate(cascade.cards) {
+                let front = CardNode(card: card, frontTexture: cardFront.texture(card.name))
+                front.position = CGPointApplyAffineTransform(cascadeOrigin, CGAffineTransformMakeTranslation((cascadeSize.width + columnSpace.width) * CGFloat(index), -cardSpace.height * CGFloat(row)))
                 table.addChild(front)
-                cursor.y -= cardSpace.height
             }
-            cursor.x += columnSpace.width + cascadeSize.width
-            cursor.y = cascadeOrigin.y
         }
     }
     
     override func mouseDown(theEvent: NSEvent) {
-        if let touchedNode = hand {
-            touchedNode.position = theEvent.locationInNode(table)
+        if let pickedNode = hand?.node {
+            let nodes = (nodesAtPoint(theEvent.locationInNode(self)) as! [SKNode]).filter({ return $0 != pickedNode && ($0 is CardNode || $0 is ColumnNode) })
+            println(nodes.map({ return $0.name }))
+            if let node = nodes.last {
+                pickedNode.position = node.position
+            } else {
+                pickedNode.position = hand!.originalPosition
+            }
+            pickedNode.zPosition = 1
             hand = nil
         } else {
-            let touchedNode = nodeAtPoint(theEvent.locationInNode(self))
-            hand = touchedNode
+            let node = nodeAtPoint(theEvent.locationInNode(self))
+            if let pickedNode = node as? CardNode {
+                if freecell.isPickable(pickedNode.card) {
+                    pickedNode.zPosition = 2
+                    hand = Hand(node: pickedNode, originalPosition: pickedNode.position)
+                }
+            }
+        }
+    }
+    
+    override func mouseMoved(theEvent: NSEvent) {
+        if let pickedNode = hand?.node {
+            pickedNode.position = theEvent.locationInNode(pickedNode.parent)
         }
     }
 }

@@ -110,6 +110,13 @@ class FreecellTests: XCTestCase {
         XCTAssertEqual(freecell.foundations.count, 4)
         XCTAssertEqual(freecell.cells.count, 4)
     }
+    
+    func testPlayerCanPickOnlyCardsThatArePlacedOnTopOfTheColumn() {
+        let freecell = Freecell()
+        XCTAssert(freecell.isPickable(freecell.cascades[0].top!))
+        XCTAssert(!freecell.isPickable(freecell.cascades[0].cards[0]))
+    }
+    
     func testLegalMove() {
 //        let freecell = Freecell(cascades: [Cascade([_AS])], foundations: [], cells: [])
 //        XCTAssertEqual(freecell.apply(.MoveCard(from: ((.Cascade), 0), to: (.Foundation, 0)))!, Freecell(cascades: [Cascade([])], foundations: [Foundation([_AS])], cells: []))

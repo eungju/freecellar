@@ -9,12 +9,14 @@
 /* Begin PBXBuildFile section */
 		09A871B11ADBA8DD009C6308 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09A871B01ADBA8DD009C6308 /* AppDelegate.swift */; };
 		09A871B31ADBA8DD009C6308 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09A871B21ADBA8DD009C6308 /* GameScene.swift */; };
-		09A871B51ADBA8DD009C6308 /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 09A871B41ADBA8DD009C6308 /* GameScene.sks */; };
 		09A871B71ADBA8DD009C6308 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 09A871B61ADBA8DD009C6308 /* Images.xcassets */; };
 		09A871BA1ADBA8DD009C6308 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 09A871B81ADBA8DD009C6308 /* MainMenu.xib */; };
 		09A871C61ADBA8DD009C6308 /* FreecellarTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09A871C51ADBA8DD009C6308 /* FreecellarTests.swift */; };
 		09A871D81ADBB637009C6308 /* Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09A871CF1ADBAA8F009C6308 /* Card.swift */; };
 		09A871D91ADBB647009C6308 /* Freecell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09A871D11ADBAE0B009C6308 /* Freecell.swift */; };
+		09C6C0B11ADD67C90041F1ED /* CardFront.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 09C6C0AF1ADD67C90041F1ED /* CardFront.1.png */; };
+		09C6C0B21ADD67C90041F1ED /* CardFront.plist in Resources */ = {isa = PBXBuildFile; fileRef = 09C6C0B01ADD67C90041F1ED /* CardFront.plist */; };
+		09C6C0B41ADE053F0041F1ED /* CardFront.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09C6C0B31ADE053F0041F1ED /* CardFront.swift */; };
 		09FD84B21ADBC9E700001415 /* FreecellTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09A871D31ADBAE97009C6308 /* FreecellTests.swift */; };
 		09FD84B31ADBCAC000001415 /* Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09A871CF1ADBAA8F009C6308 /* Card.swift */; };
 		09FD84B41ADBCAC300001415 /* Freecell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09A871D11ADBAE0B009C6308 /* Freecell.swift */; };
@@ -35,7 +37,6 @@
 		09A871AF1ADBA8DD009C6308 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		09A871B01ADBA8DD009C6308 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		09A871B21ADBA8DD009C6308 /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
-		09A871B41ADBA8DD009C6308 /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
 		09A871B61ADBA8DD009C6308 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		09A871B91ADBA8DD009C6308 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		09A871BF1ADBA8DD009C6308 /* FreecellarTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FreecellarTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -44,6 +45,9 @@
 		09A871CF1ADBAA8F009C6308 /* Card.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Card.swift; sourceTree = "<group>"; };
 		09A871D11ADBAE0B009C6308 /* Freecell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Freecell.swift; sourceTree = "<group>"; };
 		09A871D31ADBAE97009C6308 /* FreecellTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FreecellTests.swift; sourceTree = "<group>"; };
+		09C6C0AF1ADD67C90041F1ED /* CardFront.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CardFront.1.png; sourceTree = "<group>"; };
+		09C6C0B01ADD67C90041F1ED /* CardFront.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = CardFront.plist; sourceTree = "<group>"; };
+		09C6C0B31ADE053F0041F1ED /* CardFront.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardFront.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,9 +89,10 @@
 		09A871AD1ADBA8DD009C6308 /* Freecellar */ = {
 			isa = PBXGroup;
 			children = (
+				09C6C0AE1ADD67C90041F1ED /* CardFront.atlasc */,
+				09C6C0B31ADE053F0041F1ED /* CardFront.swift */,
 				09A871B01ADBA8DD009C6308 /* AppDelegate.swift */,
 				09A871B21ADBA8DD009C6308 /* GameScene.swift */,
-				09A871B41ADBA8DD009C6308 /* GameScene.sks */,
 				09A871B61ADBA8DD009C6308 /* Images.xcassets */,
 				09A871B81ADBA8DD009C6308 /* MainMenu.xib */,
 				09A871AE1ADBA8DD009C6308 /* Supporting Files */,
@@ -121,6 +126,15 @@
 				09A871C41ADBA8DD009C6308 /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		09C6C0AE1ADD67C90041F1ED /* CardFront.atlasc */ = {
+			isa = PBXGroup;
+			children = (
+				09C6C0AF1ADD67C90041F1ED /* CardFront.1.png */,
+				09C6C0B01ADD67C90041F1ED /* CardFront.plist */,
+			);
+			path = CardFront.atlasc;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -203,9 +217,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				09A871B51ADBA8DD009C6308 /* GameScene.sks in Resources */,
+				09C6C0B21ADD67C90041F1ED /* CardFront.plist in Resources */,
 				09A871B71ADBA8DD009C6308 /* Images.xcassets in Resources */,
 				09A871BA1ADBA8DD009C6308 /* MainMenu.xib in Resources */,
+				09C6C0B11ADD67C90041F1ED /* CardFront.1.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -226,6 +241,7 @@
 				09A871B31ADBA8DD009C6308 /* GameScene.swift in Sources */,
 				09A871B11ADBA8DD009C6308 /* AppDelegate.swift in Sources */,
 				09A871D81ADBB637009C6308 /* Card.swift in Sources */,
+				09C6C0B41ADE053F0041F1ED /* CardFront.swift in Sources */,
 				09A871D91ADBB647009C6308 /* Freecell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -420,6 +436,7 @@
 				09A871CB1ADBA8DD009C6308 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		09A871CC1ADBA8DD009C6308 /* Build configuration list for PBXNativeTarget "FreecellarTests" */ = {
 			isa = XCConfigurationList;
@@ -428,6 +445,7 @@
 				09A871CE1ADBA8DD009C6308 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

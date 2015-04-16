@@ -11,7 +11,19 @@ import Foundation
 private let RANK_ORDER: [Rank] = [.Ace, .Two, .Three, .Four, .Five, .Six, .Seven, .Eight, .Nine, .Ten, .Jack, .Queen, .King]
 private let SUIT_ORDER: [Suit] = [.Spade, .Diamond, .Heart, .Club]
 
-struct Cell {
+protocol Column {
+    typealias ColumnType
+    
+    var top: Card? {
+        get
+    }
+    
+    func put(card: Card) -> ColumnType?
+}
+
+struct Cell: Column {
+    typealias ColumnType = Cell
+    
     let card: Card?
     
     init() {
@@ -20,6 +32,12 @@ struct Cell {
     
     init(_ card: Card) {
         self.card = card
+    }
+
+    var top: Card? {
+        get {
+            return self.card
+        }
     }
     
     func put(card: Card) -> Cell? {
@@ -45,7 +63,9 @@ func ==(lhs: Cell, rhs: Cell) -> Bool {
     return lhs.card == rhs.card
 }
 
-struct Foundation {
+struct Foundation: Column {
+    typealias ColumnType = Foundation
+
     let cards: [Card]
     
     init(_ cards: [Card]) {
@@ -78,6 +98,8 @@ func ==(lhs: Foundation, rhs: Foundation) -> Bool {
 }
 
 struct Cascade {
+    typealias ColumnType = Cascade
+
     let cards: [Card]
 
     init(_ cards: [Card]) {
@@ -121,12 +143,12 @@ func ==(lhs: Cascade, rhs: Cascade) -> Bool {
     return lhs.cards == rhs.cards
 }
 
-enum Column {
+enum ColumnType {
     case Cascade, Foundation, Cell
 }
 
 enum Action {
-    case MoveCard(from: (Column, UInt), to: (Column, UInt))
+    case MoveCard(from: (ColumnType, UInt), to: (ColumnType, UInt))
 }
 
 struct Freecell {
@@ -149,6 +171,10 @@ struct Freecell {
             deck.removeRange(0..<height)
             return cascade
         })
+    }
+    
+    func isPickable(card: Card) -> Bool {
+        return !cascades.filter({$0.top == card}).isEmpty || !cells.filter({$0.top == card}).isEmpty || !foundations.filter({$0.top == card}).isEmpty
     }
     
     func apply(action: Action) -> Freecell? {
