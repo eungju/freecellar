@@ -34,6 +34,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     func applicationDidFinishLaunching(aNotification: NSNotification) {
         let scene = GameScene(size: skView.bounds.size)
+        scene.anchorPoint = CGPointMake(0.5, 0.5)
         scene.scaleMode = .ResizeFill
         skView.showsFPS = true
         skView.showsNodeCount = true
