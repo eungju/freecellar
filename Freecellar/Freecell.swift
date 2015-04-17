@@ -138,6 +138,12 @@ func ==(lhs: Cascade, rhs: Cascade) -> Bool {
     return lhs.index == rhs.index && lhs.cards == rhs.cards
 }
 
+extension Array {
+    func replace(at: Int, with anElement: T) -> [T] {
+        return Swift.map(enumerate(self)) { (i, e) in return i == at ? anElement : e }
+    }
+}
+
 struct Freecell {
     let cascades: [Cascade]
     let foundations: [Foundation]
@@ -182,23 +188,17 @@ struct Freecell {
     func pick(card: Card) -> Freecell? {
         for cascade in cascades {
             if let (changed, taken) = cascade.take() where taken == card {
-                var modified = cascades
-                modified.replaceRange(cascade.index..<cascade.index + 1, with: [changed])
-                return Freecell(cascades: modified, cells: cells, foundations: foundations)
+                return Freecell(cascades: cascades.replace(cascade.index, with: changed), cells: cells, foundations: foundations)
             }
         }
         for cell in cells {
             if let (changed, taken) = cell.take() where taken == card {
-                var modified = cells
-                modified.replaceRange(cell.index..<cell.index + 1, with: [changed])
-                return Freecell(cascades: cascades, cells: modified, foundations: foundations)
+                return Freecell(cascades: cascades, cells: cells.replace(cell.index, with: changed), foundations: foundations)
             }
         }
         for foundation in foundations {
             if let (changed, taken) = foundation.take() where taken == card {
-                var modified = foundations
-                modified.replaceRange(foundation.index..<foundation.index + 1, with: [changed])
-                return Freecell(cascades: cascades, cells: cells, foundations: modified)
+                return Freecell(cascades: cascades, cells: cells, foundations: foundations.replace(foundation.index, with: changed))
             }
         }
         return nil
@@ -206,17 +206,11 @@ struct Freecell {
     
     func put(card: Card, on: Column) -> Freecell? {
         if let cascade = on as? Cascade, let changed = cascade.put(card) {
-            var modified = cascades
-            modified.replaceRange(cascade.index..<cascade.index + 1, with: [changed])
-            return Freecell(cascades: modified, cells: cells, foundations: foundations)
+            return Freecell(cascades: cascades.replace(cascade.index, with: changed), cells: cells, foundations: foundations)
         } else if let cell = on as? Cell, let changed = cell.put(card) {
-            var modified = cells
-            modified.replaceRange(cell.index..<cell.index + 1, with: [changed])
-            return Freecell(cascades: cascades, cells: modified, foundations: foundations)
+            return Freecell(cascades: cascades, cells: cells.replace(cell.index, with: changed), foundations: foundations)
         } else if let foundation = on as? Foundation, let changed = foundation.put(card) {
-            var modified = foundations
-            modified.replaceRange(foundation.index..<foundation.index + 1, with: [changed])
-            return Freecell(cascades: cascades, cells: cells, foundations: modified)
+            return Freecell(cascades: cascades, cells: cells, foundations: foundations.replace(foundation.index, with: changed))
         } else {
             return nil
         }
@@ -225,7 +219,6 @@ struct Freecell {
     func move(card: Card, to: Column) -> Freecell? {
         return pick(card)?.put(card, on: to)
     }
-    
 }
 
 extension Freecell: Equatable {}

@@ -147,9 +147,9 @@ class GameScene: SKScene {
     }
     
     override func mouseDown(theEvent: NSEvent) {
-        if let grab = hand {
-            let pickedNode = grab.node
-            let nodes = (nodesAtPoint(theEvent.locationInNode(self)) as! [SKNode]).filter({ return $0 != pickedNode && ($0 is CardNode || $0 is ColumnNode) })
+        if let grabbed = hand {
+            let pickedNode = grabbed.node
+            let nodes = (nodesAtPoint(theEvent.locationInNode(self)) as! [SKNode]).filter { $0 !== pickedNode && ($0 is CardNode || $0 is ColumnNode) }
             var column: Column? = nil
             if let node = nodes.last {
                 if let columnNode = node as? CascadeNode {
@@ -183,22 +183,28 @@ class GameScene: SKScene {
                 }
                 freecell = freecell.move(pickedNode.card, to: targetColumn)!
             } else {
-                pickedNode.position = grab.position
-                pickedNode.zPosition = grab.zPosition
+                pickedNode.position = grabbed.position
+                pickedNode.zPosition = grabbed.zPosition
             }
+            pickedNode.setScale(1)
             hand = nil
         } else {
             let node = nodeAtPoint(theEvent.locationInNode(self))
-            if let pickedNode = node as? CardNode where freecell.pick(pickedNode.card) != nil {
-                pickedNode.zPosition = 20
-                hand = Hand(node: pickedNode, position: pickedNode.position, zPosition: pickedNode.zPosition)
+            if let cardNode = node as? CardNode, _ = freecell.pick(cardNode.card) {
+                cardNode.zPosition = 20
+                cardNode.setScale(1.1)
+                hand = Hand(node: cardNode, position: cardNode.position, zPosition: cardNode.zPosition)
             }
         }
     }
     
     override func mouseMoved(theEvent: NSEvent) {
-        if let pickedNode = hand?.node {
-            pickedNode.position = theEvent.locationInNode(pickedNode.parent)
+        if let grabbed = hand {
+            grabbed.node.position = theEvent.locationInNode(grabbed.node.parent)
         }
+    }
+
+    func targetNodeAtPoint(point: CGPoint) -> SKNode? {
+        return (nodesAtPoint(point) as! [SKNode]).filter({ ($0 is CardNode || $0 is ColumnNode) && (self.hand?.node !== $0) }).last
     }
 }
