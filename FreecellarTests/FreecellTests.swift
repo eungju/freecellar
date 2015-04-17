@@ -27,39 +27,39 @@ let _3C = Card(.Three, .Club)
 
 class CellTests: XCTestCase {
     func testOpenCellsAcceptAnyCard() {
-        let open = Cell()
-        XCTAssertEqual(open.put(_AS)!, Cell(_AS))
-        XCTAssertEqual(open.put(_2S)!, Cell(_2S))
+        let open = Cell(0, nil)
+        XCTAssertEqual(open.put(_AS)!, Cell(0, _AS))
+        XCTAssertEqual(open.put(_2S)!, Cell(0, _2S))
     }
     
     func testClosedCellsRejectAllCards() {
-        let closed = Cell(_AS)
+        let closed = Cell(0, _AS)
         XCTAssert(closed.put(_2S) == nil)
         XCTAssert(closed.put(_2D) == nil)
     }
     
     func testOpenCellsHaveNothingToTake() {
-        let open = Cell()
+        let open = Cell(0, nil)
         XCTAssert(open.take() == nil)
     }
 
     func testClosedCellsHaveSomethingToTake() {
-        let closed = Cell(_AS)
-        XCTAssertEqual(closed.take()!.column, Cell())
+        let closed = Cell(0, _AS)
+        XCTAssertEqual(closed.take()!.column, Cell(0, nil))
         XCTAssertEqual(closed.take()!.card, _AS)
     }
 }
 
 class FoundationTests: XCTestCase {
     func testEmptyFoundationsAcceptAces() {
-        let empty = Foundation([])
-        XCTAssertEqual(empty.put(_AS)!, Foundation([_AS]))
+        let empty = Foundation(0, [])
+        XCTAssertEqual(empty.put(_AS)!, Foundation(0, [_AS]))
         XCTAssert(empty.put(_2S) == nil)
     }
     
     func testFoundationsAcceptTheSuccessorOfTheTop() {
-        let noneEmpty = Foundation([_2S])
-        XCTAssertEqual(noneEmpty.put(_3S)!, Foundation([_2S, _3S]))
+        let noneEmpty = Foundation(0, [_2S])
+        XCTAssertEqual(noneEmpty.put(_3S)!, Foundation(0, [_2S, _3S]))
         XCTAssert(noneEmpty.put(_AS) == nil)
         XCTAssert(noneEmpty.put(_4S) == nil)
         XCTAssert(noneEmpty.put(_3C) == nil)
@@ -69,15 +69,15 @@ class FoundationTests: XCTestCase {
 
 class CascadeTests: XCTestCase {
     func testEmptyCascadesAcceptAnyCard() {
-        let empty = Cascade([])
-        XCTAssertEqual(empty.put(_AS)!, Cascade([_AS]))
-        XCTAssertEqual(empty.put(_2S)!, Cascade([_2S]))
+        let empty = Cascade(0, [])
+        XCTAssertEqual(empty.put(_AS)!, Cascade(0, [_AS]))
+        XCTAssertEqual(empty.put(_2S)!, Cascade(0, [_2S]))
     }
     
     func testCascadesAcceptTheSuccessorOfTheTop() {
-        let noneEmpty = Cascade([_3S])
-        XCTAssertEqual(noneEmpty.put(_2D)!, Cascade([_3S, _2D]))
-        XCTAssertEqual(noneEmpty.put(_2H)!, Cascade([_3S, _2H]))
+        let noneEmpty = Cascade(0, [_3S])
+        XCTAssertEqual(noneEmpty.put(_2D)!, Cascade(0, [_3S, _2D]))
+        XCTAssertEqual(noneEmpty.put(_2H)!, Cascade(0, [_3S, _2H]))
         XCTAssert(noneEmpty.put(_AH) == nil)
         XCTAssert(noneEmpty.put(_4H) == nil)
         XCTAssert(noneEmpty.put(_AD) == nil)
@@ -87,13 +87,13 @@ class CascadeTests: XCTestCase {
     }
     
     func testEmptyCascadesHaveNothingToTake() {
-        let empty = Cascade([])
+        let empty = Cascade(0, [])
         XCTAssert(empty.take() == nil)
     }
 
     func testNoneEmptyCascadesHaveSomethingToTake() {
-        let noneEmpty = Cascade([_AS, _2S])
-        XCTAssertEqual(noneEmpty.take()!.column, Cascade([_AS]))
+        let noneEmpty = Cascade(0, [_AS, _2S])
+        XCTAssertEqual(noneEmpty.take()!.column, Cascade(0, [_AS]))
         XCTAssertEqual(noneEmpty.take()!.card, _2S)
     }
 }
@@ -109,12 +109,6 @@ class FreecellTests: XCTestCase {
         XCTAssertNotEqual(freecell.cascades[0], freecell.cascades[1])
         XCTAssertEqual(freecell.foundations.count, 4)
         XCTAssertEqual(freecell.cells.count, 4)
-    }
-    
-    func testPlayerCanPickOnlyCardsThatArePlacedOnTopOfTheColumn() {
-        let freecell = Freecell()
-        XCTAssert(freecell.isPickable(freecell.cascades[0].top!))
-        XCTAssert(!freecell.isPickable(freecell.cascades[0].cards[0]))
     }
     
     func testLegalMove() {

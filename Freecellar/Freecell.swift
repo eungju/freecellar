@@ -10,47 +10,38 @@ import Foundation
 
 private let RANK_ORDER: [Rank] = [.Ace, .Two, .Three, .Four, .Five, .Six, .Seven, .Eight, .Nine, .Ten, .Jack, .Queen, .King]
 private let SUIT_ORDER: [Suit] = [.Spade, .Diamond, .Heart, .Club]
+private let BLACK_SUITS: [Suit] = [.Spade, .Club]
+private let RED_SUITS: [Suit] = [.Diamond, .Heart]
 
 protocol Column {
-    typealias ColumnType
-    
-    var top: Card? {
-        get
-    }
-    
-    func put(card: Card) -> ColumnType?
+    var index: Int { get }
+    var top: Card? { get }
 }
 
 struct Cell: Column {
-    typealias ColumnType = Cell
-    
+    let index: Int
     let card: Card?
     
-    init() {
-        self.card = nil
-    }
-    
-    init(_ card: Card) {
+    init(_ index: Int, _ card: Card?) {
+        self.index = index
         self.card = card
     }
 
     var top: Card? {
-        get {
-            return self.card
-        }
+        return self.card
     }
     
     func put(card: Card) -> Cell? {
         if let top = self.card {
             return nil
         } else {
-            return Cell(card)
+            return Cell(index, card)
         }
     }
     
     func take() -> (column: Cell, card: Card)? {
         if let top = self.card {
-            return (Cell(), top)
+            return (Cell(index, nil), top)
         } else {
             return nil
         }
@@ -60,29 +51,35 @@ struct Cell: Column {
 extension Cell: Equatable {}
 
 func ==(lhs: Cell, rhs: Cell) -> Bool {
-    return lhs.card == rhs.card
+    return lhs.index == rhs.index && lhs.card == rhs.card
 }
 
 struct Foundation: Column {
-    typealias ColumnType = Foundation
-
+    let index: Int
     let cards: [Card]
     
-    init(_ cards: [Card]) {
+    init(_ index: Int, _ cards: [Card]) {
+        self.index = index
         self.cards = cards
     }
     
     var top: Card? {
-        get {
-            return self.cards.last
-        }
+        return self.cards.last
     }
 
     func put(card: Card) -> Foundation? {
         if let top = self.top {
-            return Foundation.allow(card, on: top) ? Foundation(self.cards + [card]) : nil
+            return Foundation.allow(card, on: top) ? Foundation(index, self.cards + [card]) : nil
         } else {
-            return card.rank == Rank.Ace ? Foundation([card]) : nil
+            return card.rank == Rank.Ace ? Foundation(index, [card]) : nil
+        }
+    }
+    
+    func take() -> (column: Foundation, card: Card)? {
+        if self.cards.isEmpty {
+            return nil
+        } else {
+            return (Foundation(index, Array(self.cards[0..<self.cards.count - 1])), self.cards.last!)
         }
     }
 
@@ -94,61 +91,51 @@ struct Foundation: Column {
 extension Foundation: Equatable {}
 
 func ==(lhs: Foundation, rhs: Foundation) -> Bool {
-    return lhs.cards == rhs.cards
+    return lhs.index == rhs.index && lhs.cards == rhs.cards
 }
 
-struct Cascade {
-    typealias ColumnType = Cascade
-
+struct Cascade: Column {
+    let index: Int
     let cards: [Card]
 
-    init(_ cards: [Card]) {
+    init(_ index: Int, _ cards: [Card]) {
+        self.index = index
         self.cards = cards
     }
     
     var top: Card? {
-        get {
-            return self.cards.last
-        }
+        return self.cards.last
     }
     
     func put(card: Card) -> Cascade? {
         if let top = self.top {
-            return Cascade.allow(card, on: top) ? Cascade(self.cards + [card]) : nil
+            return Cascade.allow(card, on: top) ? Cascade(index, self.cards + [card]) : nil
         } else {
-            return Cascade([card])
+            return Cascade(index, [card])
         }
     }
-   
-    private static func alternativeColor(a: Suit, _ b: Suit) -> Bool {
-        return ((a == .Spade || a == .Club) && (b == .Diamond || b == .Heart)) || ((b == .Spade || b == .Club) && (a == .Diamond || a == .Heart))
+    
+    func take() -> (column: Cascade, card: Card)? {
+        if self.cards.isEmpty {
+            return nil
+        } else {
+            return (Cascade(index, Array(self.cards[0..<self.cards.count - 1])), self.cards.last!)
+        }
     }
     
     private static func allow(card: Card, on top: Card) -> Bool {
         return alternativeColor(top.suit, card.suit) && (find(RANK_ORDER, top.rank)! - 1 == find(RANK_ORDER, card.rank)!)
     }
-
-    func take() -> (column: Cascade, card: Card)? {
-        if self.cards.isEmpty {
-            return nil
-        } else {
-            return (Cascade(Array(self.cards[0..<self.cards.count - 1])), self.cards.last!)
-        }
+   
+    private static func alternativeColor(a: Suit, _ b: Suit) -> Bool {
+        return (contains(BLACK_SUITS, a) && contains(RED_SUITS, b)) || ((contains(BLACK_SUITS, b) && contains(RED_SUITS, a)))
     }
 }
 
 extension Cascade: Equatable {}
 
 func ==(lhs: Cascade, rhs: Cascade) -> Bool {
-    return lhs.cards == rhs.cards
-}
-
-enum ColumnType {
-    case Cascade, Foundation, Cell
-}
-
-enum Action {
-    case MoveCard(from: (ColumnType, UInt), to: (ColumnType, UInt))
+    return lhs.index == rhs.index && lhs.cards == rhs.cards
 }
 
 struct Freecell {
@@ -157,8 +144,8 @@ struct Freecell {
     let cells: [Cell]
     
     init() {
-        foundations = [Foundation](count: 4, repeatedValue: Foundation([]))
-        cells = [Cell](count: 4, repeatedValue: Cell())
+        foundations = (0..<4).map({ i in Foundation(i, []) })
+        cells = (0..<4).map({ i in Cell(i, nil) })
         var deck: [Card] = []
         for suit in SUIT_ORDER {
             for rank in RANK_ORDER {
@@ -167,19 +154,78 @@ struct Freecell {
         }
         cascades = (0..<8).map({ i in
             let height = i < 4 ? 7 : 6
-            let cascade = Cascade(Array(deck[0..<height]))
+            let cascade = Cascade(i, Array(deck[0..<height]))
             deck.removeRange(0..<height)
             return cascade
         })
     }
     
-    func isPickable(card: Card) -> Bool {
-        return !cascades.filter({$0.top == card}).isEmpty || !cells.filter({$0.top == card}).isEmpty || !foundations.filter({$0.top == card}).isEmpty
+    init(cascades: [Cascade], cells: [Cell], foundations: [Foundation]) {
+        self.cascades = cascades
+        self.cells = cells
+        self.foundations = foundations
     }
     
-    func apply(action: Action) -> Freecell? {
+    func columnContains(card: Card) -> Column? {
+        if let column = filter(cascades, { contains($0.cards, card) }).last {
+            return column
+        }
+        if let column = filter(cells, { $0.card == card }).last {
+            return column
+        }
+        if let column = filter(foundations, { contains($0.cards, card) }).last {
+            return column
+        }
         return nil
     }
+    
+    func pick(card: Card) -> Freecell? {
+        for cascade in cascades {
+            if let (changed, taken) = cascade.take() where taken == card {
+                var modified = cascades
+                modified.replaceRange(cascade.index..<cascade.index + 1, with: [changed])
+                return Freecell(cascades: modified, cells: cells, foundations: foundations)
+            }
+        }
+        for cell in cells {
+            if let (changed, taken) = cell.take() where taken == card {
+                var modified = cells
+                modified.replaceRange(cell.index..<cell.index + 1, with: [changed])
+                return Freecell(cascades: cascades, cells: modified, foundations: foundations)
+            }
+        }
+        for foundation in foundations {
+            if let (changed, taken) = foundation.take() where taken == card {
+                var modified = foundations
+                modified.replaceRange(foundation.index..<foundation.index + 1, with: [changed])
+                return Freecell(cascades: cascades, cells: cells, foundations: modified)
+            }
+        }
+        return nil
+    }
+    
+    func put(card: Card, on: Column) -> Freecell? {
+        if let cascade = on as? Cascade, let changed = cascade.put(card) {
+            var modified = cascades
+            modified.replaceRange(cascade.index..<cascade.index + 1, with: [changed])
+            return Freecell(cascades: modified, cells: cells, foundations: foundations)
+        } else if let cell = on as? Cell, let changed = cell.put(card) {
+            var modified = cells
+            modified.replaceRange(cell.index..<cell.index + 1, with: [changed])
+            return Freecell(cascades: cascades, cells: modified, foundations: foundations)
+        } else if let foundation = on as? Foundation, let changed = foundation.put(card) {
+            var modified = foundations
+            modified.replaceRange(foundation.index..<foundation.index + 1, with: [changed])
+            return Freecell(cascades: cascades, cells: cells, foundations: modified)
+        } else {
+            return nil
+        }
+    }
+    
+    func move(card: Card, to: Column) -> Freecell? {
+        return pick(card)?.put(card, on: to)
+    }
+    
 }
 
 extension Freecell: Equatable {}

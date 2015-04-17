@@ -17,7 +17,6 @@ class CardNode: SKSpriteNode {
         super.init(texture: frontTexture, color: nil, size: CGSizeMake(372, 526))
         texture = frontTexture
         name = "card-" + card.name
-        zPosition = 1
     }
     
     required init(coder aDecoder: NSCoder) {
@@ -26,10 +25,12 @@ class CardNode: SKSpriteNode {
 }
 
 class ColumnNode: SKShapeNode {
-    let columnType: ColumnType
+    let columnType: Column.Type
+    let index: Int
     
-    init(columnType: ColumnType) {
+    init(columnType: Column.Type, index: Int) {
         self.columnType = columnType
+        self.index = index
         super.init()
         let border = SKShapeNode()
         var path = CGPathCreateMutable()
@@ -47,7 +48,7 @@ class ColumnNode: SKShapeNode {
 
 class CellNode: ColumnNode {
     init(index: Int) {
-        super.init(columnType: .Cell)
+        super.init(columnType: Cell.self, index: index)
         name = "cell-\(index)"
     }
     
@@ -58,7 +59,7 @@ class CellNode: ColumnNode {
 
 class FoundationNode: ColumnNode {
     init(index: Int) {
-        super.init(columnType: .Foundation)
+        super.init(columnType: Foundation.self, index: index)
         name = "foundation-\(index)"
         let a = SKLabelNode(text: "A")
         a.fontSize = frame.width
@@ -74,7 +75,7 @@ class FoundationNode: ColumnNode {
 
 class CascadeNode: ColumnNode {
     init(index: Int) {
-        super.init(columnType: .Cascade)
+        super.init(columnType: Cascade.self, index: index)
         name = "cascade-\(index)"
     }
     
@@ -85,21 +86,21 @@ class CascadeNode: ColumnNode {
 
 struct Hand {
     let node: CardNode
-    let originalPosition: CGPoint
+    let position: CGPoint
+    let zPosition: CGFloat
 }
 
 class GameScene: SKScene {
+    let tablePadding = CGSizeMake(38, 198)
+    let columnSpace = CGSizeMake(10, 30)
+    let cardSpace = CGSizeMake(14, 24)
+    let cardSize = CGSizeMake(113, 157)
     let table = SKSpriteNode()
     var freecell = Freecell()
     var hand: Hand?
     
     override func didMoveToView(view: SKView) {
         backgroundColor = SKColor.grayColor()
-        let tablePadding = CGSizeMake(38, 38)
-        let columnSpace = CGSizeMake(10, 30)
-        let cardSpace = CGSizeMake(14, 24)
-        let cardSize = CGSizeMake(113, 157)
-
         let cellSize = cardSize
         let foundationSize = cardSize
         let cascadeSize = CGSizeMake(cardSize.width, cardSize.height + cardSpace.height * (7 - 1))
@@ -120,45 +121,77 @@ class GameScene: SKScene {
         for (index, cell) in enumerate(freecell.cells) {
             let mark = CellNode(index: index)
             mark.position = CGPointApplyAffineTransform(cellOrigin, CGAffineTransformMakeTranslation((cellSize.width + columnSpace.width) * CGFloat(index), 0))
+            mark.zPosition = table.zPosition + 1
             table.addChild(mark)
         }
 
         for (index, foundation) in enumerate(freecell.foundations) {
             let mark = FoundationNode(index: index)
             mark.position = CGPointApplyAffineTransform(foundationOrigin, CGAffineTransformMakeTranslation((foundationSize.width + columnSpace.width) * CGFloat(index), 0))
+            mark.zPosition = table.zPosition + 1
             table.addChild(mark)
         }
 
         for (index, cascade) in enumerate(freecell.cascades) {
             let mark = CascadeNode(index: index)
             mark.position = CGPointApplyAffineTransform(cascadeOrigin, CGAffineTransformMakeTranslation((cascadeSize.width + columnSpace.width) * CGFloat(index), 0))
+            mark.zPosition = table.zPosition + 1
             table.addChild(mark)
             for (row, card) in enumerate(cascade.cards) {
                 let front = CardNode(card: card, frontTexture: cardFront.texture(card.name))
                 front.position = CGPointApplyAffineTransform(cascadeOrigin, CGAffineTransformMakeTranslation((cascadeSize.width + columnSpace.width) * CGFloat(index), -cardSpace.height * CGFloat(row)))
+                front.zPosition = mark.zPosition + CGFloat(1 + row)
                 table.addChild(front)
             }
         }
     }
     
     override func mouseDown(theEvent: NSEvent) {
-        if let pickedNode = hand?.node {
+        if let grab = hand {
+            let pickedNode = grab.node
             let nodes = (nodesAtPoint(theEvent.locationInNode(self)) as! [SKNode]).filter({ return $0 != pickedNode && ($0 is CardNode || $0 is ColumnNode) })
-            println(nodes.map({ return $0.name }))
+            var column: Column? = nil
             if let node = nodes.last {
-                pickedNode.position = node.position
-            } else {
-                pickedNode.position = hand!.originalPosition
+                if let columnNode = node as? CascadeNode {
+                    column = freecell.cascades[columnNode.index]
+                } else if let columnNode = node as? CellNode {
+                    column = freecell.cells[columnNode.index]
+                } else if let columnNode = node as? FoundationNode {
+                    column = freecell.foundations[columnNode.index]
+                } else if let cardNode = node as? CardNode {
+                    column = freecell.columnContains(cardNode.card)
+                }
+                if let cascade = column as? Cascade where cascade.put(pickedNode.card) != nil {
+                } else if let cell = column as? Cell where cell.put(pickedNode.card) != nil {
+                } else if let foundation = column as? Foundation where foundation.put(pickedNode.card) != nil {
+                } else {
+                    column = nil
+                }
             }
-            pickedNode.zPosition = 1
+            if let targetNode = nodes.last, let targetColumn = column {
+                if let top = targetColumn.top {
+                    let topNode = table.childNodeWithName("card-" + top.name) as! CardNode
+                    if let cascade = column as? Cascade {
+                        pickedNode.position = CGPointApplyAffineTransform(topNode.position, CGAffineTransformMakeTranslation(0, -cardSpace.height))
+                    } else {
+                        pickedNode.position = topNode.position
+                    }
+                    pickedNode.zPosition = topNode.zPosition + 1
+                } else {
+                    pickedNode.position = targetNode.position
+                    pickedNode.zPosition = targetNode.zPosition + 1
+                }
+                freecell = freecell.move(pickedNode.card, to: targetColumn)!
+            } else {
+                pickedNode.position = grab.position
+                pickedNode.zPosition = grab.zPosition
+            }
             hand = nil
         } else {
             let node = nodeAtPoint(theEvent.locationInNode(self))
-            if let pickedNode = node as? CardNode {
-                if freecell.isPickable(pickedNode.card) {
-                    pickedNode.zPosition = 2
-                    hand = Hand(node: pickedNode, originalPosition: pickedNode.position)
-                }
+            if let pickedNode = node as? CardNode where freecell.pick(pickedNode.card) != nil {
+                pickedNode.zPosition = 20
+                hand = Hand(node: pickedNode, position: pickedNode.position, zPosition: pickedNode.zPosition)
             }
         }
     }
