@@ -16,6 +16,10 @@ private let RED_SUITS: [Suit] = [.Diamond, .Heart]
 protocol Column {
     var index: Int { get }
     var top: Card? { get }
+    
+    func put(card: Card) -> Self?
+    func take() -> (column: Self, card: Card)?
+    func has(card: Card) -> Bool
 }
 
 struct Cell: Column {
@@ -45,6 +49,10 @@ struct Cell: Column {
         } else {
             return nil
         }
+    }
+    
+    func has(card: Card) -> Bool {
+        return self.card == card
     }
 }
 
@@ -81,6 +89,10 @@ struct Foundation: Column {
         } else {
             return (Foundation(index, Array(self.cards[0..<self.cards.count - 1])), self.cards.last!)
         }
+    }
+    
+    func has(card: Card) -> Bool {
+        return contains(self.cards, card)
     }
 
     private static func allow(card: Card, on top: Card) -> Bool {
@@ -123,6 +135,10 @@ struct Cascade: Column {
         }
     }
     
+    func has(card: Card) -> Bool {
+        return contains(self.cards, card)
+    }
+    
     private static func allow(card: Card, on top: Card) -> Bool {
         return alternativeColor(top.suit, card.suit) && (find(RANK_ORDER, top.rank)! - 1 == find(RANK_ORDER, card.rank)!)
     }
@@ -136,12 +152,6 @@ extension Cascade: Equatable {}
 
 func ==(lhs: Cascade, rhs: Cascade) -> Bool {
     return lhs.index == rhs.index && lhs.cards == rhs.cards
-}
-
-extension Array {
-    func replace(at: Int, with anElement: T) -> [T] {
-        return Swift.map(enumerate(self)) { (i, e) in return i == at ? anElement : e }
-    }
 }
 
 struct Freecell {
@@ -173,13 +183,13 @@ struct Freecell {
     }
     
     func columnContains(card: Card) -> Column? {
-        if let column = filter(cascades, { contains($0.cards, card) }).last {
+        if let column = filter(cascades, { $0.has(card) }).first {
             return column
         }
-        if let column = filter(cells, { $0.card == card }).last {
+        if let column = filter(cells, { $0.has(card) }).first {
             return column
         }
-        if let column = filter(foundations, { contains($0.cards, card) }).last {
+        if let column = filter(foundations, { $0.has(card) }).first {
             return column
         }
         return nil
@@ -188,17 +198,17 @@ struct Freecell {
     func pick(card: Card) -> Freecell? {
         for cascade in cascades {
             if let (changed, taken) = cascade.take() where taken == card {
-                return Freecell(cascades: cascades.replace(cascade.index, with: changed), cells: cells, foundations: foundations)
+                return (_cascades >>> _subscript(cascade.index)).set(changed, self)
             }
         }
         for cell in cells {
             if let (changed, taken) = cell.take() where taken == card {
-                return Freecell(cascades: cascades, cells: cells.replace(cell.index, with: changed), foundations: foundations)
+                return (_cells >>> _subscript(cell.index)).set(changed, self)
             }
         }
         for foundation in foundations {
             if let (changed, taken) = foundation.take() where taken == card {
-                return Freecell(cascades: cascades, cells: cells, foundations: foundations.replace(foundation.index, with: changed))
+                return (_foundations >>> _subscript(foundation.index)).set(changed, self)
             }
         }
         return nil
@@ -206,11 +216,11 @@ struct Freecell {
     
     func put(card: Card, on: Column) -> Freecell? {
         if let cascade = on as? Cascade, let changed = cascade.put(card) {
-            return Freecell(cascades: cascades.replace(cascade.index, with: changed), cells: cells, foundations: foundations)
+            return (_cascades >>> _subscript(cascade.index)).set(changed, self)
         } else if let cell = on as? Cell, let changed = cell.put(card) {
-            return Freecell(cascades: cascades, cells: cells.replace(cell.index, with: changed), foundations: foundations)
+            return (_cells >>> _subscript(cell.index)).set(changed, self)
         } else if let foundation = on as? Foundation, let changed = foundation.put(card) {
-            return Freecell(cascades: cascades, cells: cells, foundations: foundations.replace(foundation.index, with: changed))
+            return (_foundations >>> _subscript(foundation.index)).set(changed, self)
         } else {
             return nil
         }
@@ -226,3 +236,7 @@ extension Freecell: Equatable {}
 func ==(lhs: Freecell, rhs: Freecell) -> Bool {
     return lhs.cascades == rhs.cascades && lhs.foundations == rhs.foundations && lhs.cells == rhs.cells
 }
+
+let _cascades = Lens<Freecell, [Cascade]>(get: { $0.cascades }, set: { Freecell(cascades: $0, cells: $1.cells, foundations: $1.foundations) })
+let _cells = Lens<Freecell, [Cell]>(get: { $0.cells }, set: { Freecell(cascades: $1.cascades, cells: $0, foundations: $1.foundations) })
+let _foundations = Lens<Freecell, [Foundation]>(get: { $0.foundations }, set: { Freecell(cascades: $1.cascades, cells: $1.cells, foundations: $0) })

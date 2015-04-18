@@ -14,6 +14,8 @@
 		09A871C61ADBA8DD009C6308 /* FreecellarTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09A871C51ADBA8DD009C6308 /* FreecellarTests.swift */; };
 		09A871D81ADBB637009C6308 /* Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09A871CF1ADBAA8F009C6308 /* Card.swift */; };
 		09A871D91ADBB647009C6308 /* Freecell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09A871D11ADBAE0B009C6308 /* Freecell.swift */; };
+		09AA28F31AE23BA6003615A4 /* Lens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09AA28F21AE23BA6003615A4 /* Lens.swift */; };
+		09AA28F41AE23BB6003615A4 /* Lens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09AA28F21AE23BA6003615A4 /* Lens.swift */; };
 		09C6C0B11ADD67C90041F1ED /* CardFront.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 09C6C0AF1ADD67C90041F1ED /* CardFront.1.png */; };
 		09C6C0B21ADD67C90041F1ED /* CardFront.plist in Resources */ = {isa = PBXBuildFile; fileRef = 09C6C0B01ADD67C90041F1ED /* CardFront.plist */; };
 		09C6C0B41ADE053F0041F1ED /* CardFront.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09C6C0B31ADE053F0041F1ED /* CardFront.swift */; };
@@ -45,6 +47,7 @@
 		09A871CF1ADBAA8F009C6308 /* Card.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Card.swift; sourceTree = "<group>"; };
 		09A871D11ADBAE0B009C6308 /* Freecell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Freecell.swift; sourceTree = "<group>"; };
 		09A871D31ADBAE97009C6308 /* FreecellTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FreecellTests.swift; sourceTree = "<group>"; };
+		09AA28F21AE23BA6003615A4 /* Lens.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Lens.swift; sourceTree = "<group>"; };
 		09C6C0AF1ADD67C90041F1ED /* CardFront.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CardFront.1.png; sourceTree = "<group>"; };
 		09C6C0B01ADD67C90041F1ED /* CardFront.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = CardFront.plist; sourceTree = "<group>"; };
 		09C6C0B31ADE053F0041F1ED /* CardFront.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardFront.swift; sourceTree = "<group>"; };
@@ -98,6 +101,7 @@
 				09A871AE1ADBA8DD009C6308 /* Supporting Files */,
 				09A871CF1ADBAA8F009C6308 /* Card.swift */,
 				09A871D11ADBAE0B009C6308 /* Freecell.swift */,
+				09AA28F21AE23BA6003615A4 /* Lens.swift */,
 			);
 			path = Freecellar;
 			sourceTree = "<group>";
@@ -243,6 +247,7 @@
 				09A871D81ADBB637009C6308 /* Card.swift in Sources */,
 				09C6C0B41ADE053F0041F1ED /* CardFront.swift in Sources */,
 				09A871D91ADBB647009C6308 /* Freecell.swift in Sources */,
+				09AA28F31AE23BA6003615A4 /* Lens.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -254,6 +259,7 @@
 				09FD84B31ADBCAC000001415 /* Card.swift in Sources */,
 				09FD84B21ADBC9E700001415 /* FreecellTests.swift in Sources */,
 				09FD84B41ADBCAC300001415 /* Freecell.swift in Sources */,
+				09AA28F41AE23BB6003615A4 /* Lens.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
