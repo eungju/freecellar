@@ -14,8 +14,8 @@ struct Lens<A, B> {
     let set: (B, A) -> A
 }
 
-infix operator >>> { associativity left precedence 140 }
-func >>><A, B, C>(l: Lens<A, B>, r: Lens<B, C>) -> Lens<A, C> {
+infix operator >=> { associativity left precedence 140 }
+func >=><A, B, C>(l: Lens<A, B>, r: Lens<B, C>) -> Lens<A, C> {
     return Lens(get: { r.get(l.get($0)) }, set: { (c, a) in l.set(r.set(c, l.get(a)), a) })
 }
 

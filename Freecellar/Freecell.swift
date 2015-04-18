@@ -198,17 +198,17 @@ struct Freecell {
     func pick(card: Card) -> Freecell? {
         for cascade in cascades {
             if let (changed, taken) = cascade.take() where taken == card {
-                return (_cascades >>> _subscript(cascade.index)).set(changed, self)
+                return (_cascades >=> _subscript(cascade.index)).set(changed, self)
             }
         }
         for cell in cells {
             if let (changed, taken) = cell.take() where taken == card {
-                return (_cells >>> _subscript(cell.index)).set(changed, self)
+                return (_cells >=> _subscript(cell.index)).set(changed, self)
             }
         }
         for foundation in foundations {
             if let (changed, taken) = foundation.take() where taken == card {
-                return (_foundations >>> _subscript(foundation.index)).set(changed, self)
+                return (_foundations >=> _subscript(foundation.index)).set(changed, self)
             }
         }
         return nil
@@ -216,11 +216,11 @@ struct Freecell {
     
     func put(card: Card, on: Column) -> Freecell? {
         if let cascade = on as? Cascade, let changed = cascade.put(card) {
-            return (_cascades >>> _subscript(cascade.index)).set(changed, self)
+            return (_cascades >=> _subscript(cascade.index)).set(changed, self)
         } else if let cell = on as? Cell, let changed = cell.put(card) {
-            return (_cells >>> _subscript(cell.index)).set(changed, self)
+            return (_cells >=> _subscript(cell.index)).set(changed, self)
         } else if let foundation = on as? Foundation, let changed = foundation.put(card) {
-            return (_foundations >>> _subscript(foundation.index)).set(changed, self)
+            return (_foundations >=> _subscript(foundation.index)).set(changed, self)
         } else {
             return nil
         }
