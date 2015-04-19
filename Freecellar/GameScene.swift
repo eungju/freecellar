@@ -161,10 +161,7 @@ class GameScene: SKScene {
                 } else if let cardNode = node as? CardNode {
                     column = freecell.columnContains(cardNode.card)
                 }
-                if let cascade = column as? Cascade where cascade.put(pickedNode.card) != nil {
-                } else if let cell = column as? Cell where cell.put(pickedNode.card) != nil {
-                } else if let foundation = column as? Foundation where foundation.put(pickedNode.card) != nil {
-                } else {
+                if column!.put(pickedNode.card) == nil {
                     column = nil
                 }
             }

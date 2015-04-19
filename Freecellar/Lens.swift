@@ -8,23 +8,32 @@
 
 import Foundation
 
-
 struct Lens<A, B> {
     let get: A -> B
     let set: (B, A) -> A
-}
 
-infix operator >=> { associativity left precedence 140 }
-func >=><A, B, C>(l: Lens<A, B>, r: Lens<B, C>) -> Lens<A, C> {
-    return Lens(get: { r.get(l.get($0)) }, set: { (c, a) in l.set(r.set(c, l.get(a)), a) })
-}
-
-extension Array {
-    func replace(at: Int, with anElement: T) -> [T] {
-        return Swift.map(enumerate(self)) { (i, e) in return i == at ? anElement : e }
+    func modify(f: (B) -> B) -> (A -> A) {
+        return { self.set(f(self.get($0)), $0) }
+    }
+    
+    func andThen<C>(rhs: Lens<B, C>) -> Lens<A, C> {
+        return Lens<A, C>(
+            get: { rhs.get(self.get($0)) },
+            set: { (c, a) in self.set(rhs.set(c, self.get(a)), a) }
+        )
     }
 }
 
+infix operator >=> { associativity left }
+func >=><A, B, C>(lhs: Lens<A, B>, rhs: Lens<B, C>) -> Lens<A, C> {
+    return lhs.andThen(rhs)
+}
+
 func _subscript<T>(at: Int) -> Lens<[T], T> {
-    return Lens<[T], T>(get: { a -> T in a[at] }, set: { (e, a) -> [T] in a.replace(at, with: e) })
+    return Lens<[T], T>(
+        get: { a -> T in a[at] },
+        set: { (newB, a) -> [T] in
+            map(enumerate(a)) { (i, oldB) in return i == at ? newB : oldB }
+        }
+    )
 }
