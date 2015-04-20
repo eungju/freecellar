@@ -11,9 +11,11 @@ import CoreGraphics
 
 class CardNode: SKSpriteNode {
     let card: Card
+    var columnNode: ColumnNode
     
-    init(card: Card, frontTexture: SKTexture) {
+    init(card: Card, columnNode: ColumnNode, frontTexture: SKTexture) {
         self.card = card
+        self.columnNode = columnNode
         super.init(texture: frontTexture, color: nil, size: CGSizeMake(372, 526))
         texture = frontTexture
         name = "card-" + card.name
@@ -25,12 +27,10 @@ class CardNode: SKSpriteNode {
 }
 
 class ColumnNode: SKShapeNode {
-    let columnType: Column.Type
-    let index: Int
-    
-    init(columnType: Column.Type, index: Int) {
-        self.columnType = columnType
-        self.index = index
+    let ref: Lens<Freecell, Column>
+
+    init(ref: Lens<Freecell, Column>) {
+        self.ref = ref
         super.init()
         let border = SKShapeNode()
         var path = CGPathCreateMutable()
@@ -48,7 +48,7 @@ class ColumnNode: SKShapeNode {
 
 class CellNode: ColumnNode {
     init(index: Int) {
-        super.init(columnType: Cell.self, index: index)
+        super.init(ref: _cells >=> _subscript(index))
         name = "cell-\(index)"
     }
     
@@ -59,7 +59,7 @@ class CellNode: ColumnNode {
 
 class FoundationNode: ColumnNode {
     init(index: Int) {
-        super.init(columnType: Foundation.self, index: index)
+        super.init(ref: _foundations >=> _subscript(index))
         name = "foundation-\(index)"
         let a = SKLabelNode(text: "A")
         a.fontSize = frame.width
@@ -75,7 +75,7 @@ class FoundationNode: ColumnNode {
 
 class CascadeNode: ColumnNode {
     init(index: Int) {
-        super.init(columnType: Cascade.self, index: index)
+        super.init(ref: _cascades >=> _subscript(index))
         name = "cascade-\(index)"
     }
     
@@ -138,7 +138,7 @@ class GameScene: SKScene {
             mark.zPosition = table.zPosition + 1
             table.addChild(mark)
             for (row, card) in enumerate(cascade.cards) {
-                let front = CardNode(card: card, frontTexture: cardFront.texture(card.name))
+                let front = CardNode(card: card, columnNode: mark, frontTexture: cardFront.texture(card.name))
                 front.position = CGPointApplyAffineTransform(cascadeOrigin, CGAffineTransformMakeTranslation((cascadeSize.width + columnSpace.width) * CGFloat(index), -cardSpace.height * CGFloat(row)))
                 front.zPosition = mark.zPosition + CGFloat(1 + row)
                 table.addChild(front)
@@ -149,36 +149,22 @@ class GameScene: SKScene {
     override func mouseDown(theEvent: NSEvent) {
         if let grabbed = hand {
             let pickedNode = grabbed.node
-            let nodes = (nodesAtPoint(theEvent.locationInNode(self)) as! [SKNode]).filter { $0 !== pickedNode && ($0 is CardNode || $0 is ColumnNode) }
-            var column: Column? = nil
-            if let node = nodes.last {
-                if let columnNode = node as? CascadeNode {
-                    column = freecell.cascades[columnNode.index]
-                } else if let columnNode = node as? CellNode {
-                    column = freecell.cells[columnNode.index]
-                } else if let columnNode = node as? FoundationNode {
-                    column = freecell.foundations[columnNode.index]
-                } else if let cardNode = node as? CardNode {
-                    column = freecell.columnContains(cardNode.card)
-                }
-                if column!.put(pickedNode.card) == nil {
-                    column = nil
-                }
+            let nodes = nodesAtPoint(theEvent.locationInNode(self)).filter({ $0 !== pickedNode && ($0 is CardNode || $0 is ColumnNode) }) as! [SKNode]
+            var columnNode: ColumnNode? = nil
+            if let node = nodes.last as? ColumnNode {
+                columnNode = node
+            } else if let node = nodes.last as? CardNode {
+                columnNode = node.columnNode
             }
-            if let targetNode = nodes.last, let targetColumn = column {
-                if let top = targetColumn.top {
-                    let topNode = table.childNodeWithName("card-" + top.name) as! CardNode
-                    if let cascade = column as? Cascade {
-                        pickedNode.position = CGPointApplyAffineTransform(topNode.position, CGAffineTransformMakeTranslation(0, -cardSpace.height))
-                    } else {
-                        pickedNode.position = topNode.position
-                    }
-                    pickedNode.zPosition = topNode.zPosition + 1
+            if let targetNode = columnNode, let nextState = freecell.move(pickedNode.card, from: pickedNode.columnNode.ref, to: targetNode.ref) {
+                if let cascadeNode = targetNode as? CascadeNode {
+                    pickedNode.position = CGPointApplyAffineTransform(targetNode.position, CGAffineTransformMakeTranslation(0, -cardSpace.height * CGFloat(targetNode.ref.get(freecell).height)))
                 } else {
                     pickedNode.position = targetNode.position
-                    pickedNode.zPosition = targetNode.zPosition + 1
                 }
-                freecell = freecell.move(pickedNode.card, to: targetColumn)!
+                pickedNode.zPosition = targetNode.zPosition + CGFloat(targetNode.ref.get(freecell).height + 1)
+                pickedNode.columnNode = targetNode
+                freecell = nextState
             } else {
                 pickedNode.position = grabbed.position
                 pickedNode.zPosition = grabbed.zPosition
@@ -187,10 +173,10 @@ class GameScene: SKScene {
             hand = nil
         } else {
             let node = nodeAtPoint(theEvent.locationInNode(self))
-            if let cardNode = node as? CardNode, _ = freecell.pick(cardNode.card) {
-                cardNode.zPosition = 20
-                cardNode.setScale(1.1)
+            if let cardNode = node as? CardNode where freecell.pick(cardNode.card, from: cardNode.columnNode.ref) != nil {
                 hand = Hand(node: cardNode, position: cardNode.position, zPosition: cardNode.zPosition)
+                cardNode.zPosition = 1 + 54
+                cardNode.setScale(1.1)
             }
         }
     }
@@ -199,9 +185,5 @@ class GameScene: SKScene {
         if let grabbed = hand {
             grabbed.node.position = theEvent.locationInNode(grabbed.node.parent)
         }
-    }
-
-    func targetNodeAtPoint(point: CGPoint) -> SKNode? {
-        return (nodesAtPoint(point) as! [SKNode]).filter({ ($0 is CardNode || $0 is ColumnNode) && (self.hand?.node !== $0) }).last
     }
 }

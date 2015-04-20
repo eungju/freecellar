@@ -27,39 +27,38 @@ let _3C = Card(.Three, .Club)
 
 class CellTests: XCTestCase {
     func testOpenCellsAcceptAnyCard() {
-        let open = Cell(0, nil)
-        XCTAssertEqual(open.put(_AS)!, Cell(0, _AS))
-        XCTAssertEqual(open.put(_2S)!, Cell(0, _2S))
+        let open = Column([], cellRule)
+        XCTAssertEqual(open.put(_AS)!, Column([_AS], cellRule))
+        XCTAssertEqual(open.put(_2S)!, Column([_2S], cellRule))
     }
     
     func testClosedCellsRejectAllCards() {
-        let closed = Cell(0, _AS)
+        let closed = Column([_AS], cellRule)
         XCTAssert(closed.put(_2S) == nil)
         XCTAssert(closed.put(_2D) == nil)
     }
     
     func testOpenCellsHaveNothingToTake() {
-        let open = Cell(0, nil)
-        XCTAssert(open.take() == nil)
+        let open = Column([], cellRule)
+        XCTAssert(open.take(_AS) == nil)
     }
 
     func testClosedCellsHaveSomethingToTake() {
-        let closed = Cell(0, _AS)
-        XCTAssertEqual(closed.take()!.column, Cell(0, nil))
-        XCTAssertEqual(closed.take()!.card, _AS)
+        let closed = Column([_AS], cellRule)
+        XCTAssertEqual(closed.take(_AS)!, Column([], cellRule))
     }
 }
 
 class FoundationTests: XCTestCase {
     func testEmptyFoundationsAcceptAces() {
-        let empty = Foundation(0, [])
-        XCTAssertEqual(empty.put(_AS)!, Foundation(0, [_AS]))
+        let empty = Column([], foundationRule)
+        XCTAssertEqual(empty.put(_AS)!, Column([_AS], foundationRule))
         XCTAssert(empty.put(_2S) == nil)
     }
     
     func testFoundationsAcceptTheSuccessorOfTheTop() {
-        let noneEmpty = Foundation(0, [_2S])
-        XCTAssertEqual(noneEmpty.put(_3S)!, Foundation(0, [_2S, _3S]))
+        let noneEmpty = Column([_2S], foundationRule)
+        XCTAssertEqual(noneEmpty.put(_3S)!, Column([_2S, _3S], foundationRule))
         XCTAssert(noneEmpty.put(_AS) == nil)
         XCTAssert(noneEmpty.put(_4S) == nil)
         XCTAssert(noneEmpty.put(_3C) == nil)
@@ -69,15 +68,15 @@ class FoundationTests: XCTestCase {
 
 class CascadeTests: XCTestCase {
     func testEmptyCascadesAcceptAnyCard() {
-        let empty = Cascade(0, [])
-        XCTAssertEqual(empty.put(_AS)!, Cascade(0, [_AS]))
-        XCTAssertEqual(empty.put(_2S)!, Cascade(0, [_2S]))
+        let empty = Column([], cascadeRule)
+        XCTAssertEqual(empty.put(_AS)!, Column([_AS], cascadeRule))
+        XCTAssertEqual(empty.put(_2S)!, Column([_2S], cascadeRule))
     }
     
     func testCascadesAcceptTheSuccessorOfTheTop() {
-        let noneEmpty = Cascade(0, [_3S])
-        XCTAssertEqual(noneEmpty.put(_2D)!, Cascade(0, [_3S, _2D]))
-        XCTAssertEqual(noneEmpty.put(_2H)!, Cascade(0, [_3S, _2H]))
+        let noneEmpty = Column([_3S], cascadeRule)
+        XCTAssertEqual(noneEmpty.put(_2D)!, Column([_3S, _2D], cascadeRule))
+        XCTAssertEqual(noneEmpty.put(_2H)!, Column([_3S, _2H], cascadeRule))
         XCTAssert(noneEmpty.put(_AH) == nil)
         XCTAssert(noneEmpty.put(_4H) == nil)
         XCTAssert(noneEmpty.put(_AD) == nil)
@@ -87,14 +86,13 @@ class CascadeTests: XCTestCase {
     }
     
     func testEmptyCascadesHaveNothingToTake() {
-        let empty = Cascade(0, [])
-        XCTAssert(empty.take() == nil)
+        let empty = Column([], cascadeRule)
+        XCTAssert(empty.take(_AS) == nil)
     }
 
     func testNoneEmptyCascadesHaveSomethingToTake() {
-        let noneEmpty = Cascade(0, [_AS, _2S])
-        XCTAssertEqual(noneEmpty.take()!.column, Cascade(0, [_AS]))
-        XCTAssertEqual(noneEmpty.take()!.card, _2S)
+        let noneEmpty = Column([_AS, _2S], cascadeRule)
+        XCTAssertEqual(noneEmpty.take(_2S)!, Column([_AS], cascadeRule))
     }
 }
 
@@ -112,7 +110,12 @@ class FreecellTests: XCTestCase {
     }
     
     func testLegalMove() {
-//        let freecell = Freecell(cascades: [Cascade([_AS])], foundations: [], cells: [])
-//        XCTAssertEqual(freecell.apply(.MoveCard(from: ((.Cascade), 0), to: (.Foundation, 0)))!, Freecell(cascades: [Cascade([])], foundations: [Foundation([_AS])], cells: []))
+        let freecell = Freecell(cascades: [Column([_AS], cascadeRule)], foundations: [Column([], foundationRule)], cells: [Column([], cellRule)])
+        XCTAssertEqual(freecell.move(_AS, from: _cascades >=> _subscript(0), to: _foundations >=> _subscript(0))!, Freecell(cascades: [Column([], cascadeRule)], foundations: [Column([_AS], foundationRule)], cells: [Column([], cellRule)]))
+    }
+
+    func testIlegalMove() {
+        let freecell = Freecell(cascades: [Column([_AS, _2S], cascadeRule)], foundations: [Column([], foundationRule)], cells: [Column([], cellRule)])
+        XCTAssert(freecell.move(_2S, from: _cascades >=> _subscript(0), to: _foundations >=> _subscript(0)) == nil)
     }
 }
