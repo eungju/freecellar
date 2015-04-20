@@ -128,4 +128,9 @@ class FreecellTests: XCTestCase {
         let freecell = Freecell(cascades: [Column([_AS, _2S], cascadeRule)], foundations: [Column([], foundationRule)], cells: [Column([], cellRule)])
         XCTAssert(freecell.move(_2S, from: _cascades >=> _subscript(0), to: _foundations >=> _subscript(0)) == nil)
     }
+    
+    func testDone() {
+        XCTAssert(!Freecell(seed: 1).isDone)
+        XCTAssert(Freecell(cascades: [], foundations: SUIT_ORDER.map({ suit in Column(RANK_ORDER.map({ rank in Card(rank, suit) }), foundationRule) }), cells: []).isDone)
+    }
 }

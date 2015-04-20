@@ -8,10 +8,10 @@
 
 import Foundation
 
-private let RANK_ORDER: [Rank] = [.Ace, .Two, .Three, .Four, .Five, .Six, .Seven, .Eight, .Nine, .Ten, .Jack, .Queen, .King]
-private let SUIT_ORDER: [Suit] = [.Club, .Diamond, .Heart, .Spade]
-private let BLACK_SUITS: [Suit] = [.Spade, .Club]
-private let RED_SUITS: [Suit] = [.Diamond, .Heart]
+let RANK_ORDER: [Rank] = [.Ace, .Two, .Three, .Four, .Five, .Six, .Seven, .Eight, .Nine, .Ten, .Jack, .Queen, .King]
+let SUIT_ORDER: [Suit] = [.Club, .Diamond, .Heart, .Spade]
+let BLACK_SUITS: [Suit] = [.Spade, .Club]
+let RED_SUITS: [Suit] = [.Diamond, .Heart]
 
 struct Column {
     let cards: [Card]
@@ -165,6 +165,10 @@ struct Freecell {
     
     func move(card: Card, from: Lens<Freecell, Column>, to: Lens<Freecell, Column>) -> Freecell? {
         return pick(card, from: from)?.put(card, to: to)
+    }
+    
+    var isDone: Bool {
+        return foundations.filter({ $0.height == RANK_ORDER.count }).count == foundations.count
     }
 }
 
