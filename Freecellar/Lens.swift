@@ -16,6 +16,16 @@ struct Lens<A, B> {
         return { self.set(f(self.get($0)), $0) }
     }
     
+    func try(f: (B) -> B?) -> (A -> A?) {
+        return {
+            if let modifiedPart = f(self.get($0)) {
+                return self.set(modifiedPart, $0)
+            } else {
+                return nil
+            }
+        }
+    }
+    
     func andThen<C>(rhs: Lens<B, C>) -> Lens<A, C> {
         return Lens<A, C>(
             get: { rhs.get(self.get($0)) },

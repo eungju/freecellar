@@ -146,17 +146,11 @@ struct Freecell {
     }
     
     func pick(card: Card, from: Lens<Freecell, Column>) -> Freecell? {
-        if let changedColumn = from.get(self).take(card) {
-            return from.set(changedColumn, self)
-        }
-        return nil
+        return from.try({ $0.take(card) })(self)
     }
     
     func put(card: Card, to: Lens<Freecell, Column>) -> Freecell? {
-        if let changedColumn = to.get(self).put(card) {
-            return to.set(changedColumn, self)
-        }
-        return nil
+        return to.try({ $0.put(card) })(self)
     }
     
     func move(card: Card, from: Lens<Freecell, Column>, to: Lens<Freecell, Column>) -> Freecell? {
