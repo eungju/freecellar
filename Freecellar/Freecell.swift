@@ -157,7 +157,6 @@ struct Freecell {
     let cells: [Column]
 
     init(cards: [Card]) {
-        println(cards)
         cascades = (0..<8).map({ i in
             return Column((0..<(i < 4 ? 7 : 6)).map({ j in cards[i + j * 8] }), cascadeRule)
         })
