@@ -96,9 +96,19 @@ class CascadeTests: XCTestCase {
     }
 }
 
+class DeckTests: XCTestCase {
+    func testSeed1() {
+        XCTAssertEqual(" ".join(Deck(seed: 1).cards[0..<9].map({ $0.name })), "JD 2D 9H JC 5D 7H 7C 5H KD")
+    }
+
+    func testSeed617() {
+        XCTAssertEqual(" ".join(Deck(seed: 617).cards[0..<9].map({ $0.name })), "7D AD 5C 3S 5S 8C 2D AH TD")
+    }
+}
+
 class FreecellTests: XCTestCase {
     func testInitialization() {
-        let freecell = Freecell()
+        let freecell = Freecell(seed: 1)
         XCTAssertEqual(freecell.cascades.count, 8)
         XCTAssertEqual(freecell.cascades[0].cards.count, 7)
         XCTAssertEqual(freecell.cascades[3].cards.count, 7)

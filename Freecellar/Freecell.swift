@@ -9,7 +9,7 @@
 import Foundation
 
 private let RANK_ORDER: [Rank] = [.Ace, .Two, .Three, .Four, .Five, .Six, .Seven, .Eight, .Nine, .Ten, .Jack, .Queen, .King]
-private let SUIT_ORDER: [Suit] = [.Spade, .Diamond, .Heart, .Club]
+private let SUIT_ORDER: [Suit] = [.Club, .Diamond, .Heart, .Spade]
 private let BLACK_SUITS: [Suit] = [.Spade, .Club]
 private let RED_SUITS: [Suit] = [.Diamond, .Heart]
 
@@ -117,26 +117,56 @@ let cascadeRule = ColumnRule(
     }
 )
 
+class Random {
+    var seed: Int
+
+    init(seed: Int) {
+        self.seed = seed
+    }
+
+    func next() -> Int {
+        seed = (seed * 214013 + 2531011) & 0x7fffffff
+        return (seed >> 16) & 0x7fff
+    }
+}
+
+struct Deck {
+    let cards: [Card]
+    
+    init(seed: Int) {
+        let random = Random(seed: seed)
+        var cards: [Card] = []
+        for rank in reverse(RANK_ORDER) {
+            for suit in reverse(SUIT_ORDER) {
+                cards.append(Card(rank, suit))
+            }
+        }
+        for i in 0..<(cards.count - 1) {
+            let j = (cards.count - 1) - random.next() % (cards.count - i);
+            let t = cards[i]
+            cards[i] = cards[j]
+            cards[j] = t
+        }
+        self.cards = cards
+    }
+}
+
 struct Freecell {
     let cascades: [Column]
     let foundations: [Column]
     let cells: [Column]
-    
-    init() {
-        var deck: [Card] = []
-        for suit in SUIT_ORDER {
-            for rank in RANK_ORDER {
-                deck.append(Card(rank, suit))
-            }
-        }
+
+    init(cards: [Card]) {
+        println(cards)
         cascades = (0..<8).map({ i in
-            let height = i < 4 ? 7 : 6
-            let cascade = Column(Array(deck[0..<height]), cascadeRule)
-            deck.removeRange(0..<height)
-            return cascade
+            return Column((0..<(i < 4 ? 7 : 6)).map({ j in cards[i + j * 8] }), cascadeRule)
         })
         foundations = (0..<4).map({ i in Column([], foundationRule) })
         cells = (0..<4).map({ i in Column([], cellRule) })
+    }
+    
+    init(seed: Int) {
+        self.init(cards: Deck(seed: seed).cards)
     }
     
     init(cascades: [Column], foundations: [Column], cells: [Column]) {

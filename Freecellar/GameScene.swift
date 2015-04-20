@@ -96,7 +96,7 @@ class GameScene: SKScene {
     let cardSpace = CGSizeMake(14, 24)
     let cardSize = CGSizeMake(113, 157)
     let table = SKSpriteNode()
-    var freecell = Freecell()
+    var freecell = Freecell(seed: 1)
     var hand: Hand?
     
     override func didMoveToView(view: SKView) {

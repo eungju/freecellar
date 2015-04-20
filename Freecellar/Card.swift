@@ -16,7 +16,7 @@ enum Rank {
     case Ace, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King
 }
 
-struct Card {
+struct Card: Printable {
     let rank: Rank
     let suit: Suit
     
@@ -27,30 +27,35 @@ struct Card {
     
     var name: String {
         get {
-            let RANKS: Dictionary<Rank, String> = [
-                .Ace: "A",
-                .Two: "2",
-                .Three: "3",
-                .Four: "4",
-                .Five: "5",
-                .Six: "6",
-                .Seven: "7",
-                .Eight: "8",
-                .Nine: "9",
-                .Ten: "10",
-                .Jack: "J",
-                .Queen: "Q",
-                .King: "K"
-            ]
-            let SUITS: Dictionary<Suit, String> = [
-                .Spade: "S",
-                .Diamond: "D",
-                .Heart: "H",
-                .Club: "C",
-            ]
-            return RANKS[rank]! + SUITS[suit]!
+            return Card.rankNames[rank]! + Card.suitNames[suit]!
         }
     }
+    
+    var description: String {
+        return name
+    }
+
+    static let rankNames: Dictionary<Rank, String> = [
+        .Ace: "A",
+        .Two: "2",
+        .Three: "3",
+        .Four: "4",
+        .Five: "5",
+        .Six: "6",
+        .Seven: "7",
+        .Eight: "8",
+        .Nine: "9",
+        .Ten: "T",
+        .Jack: "J",
+        .Queen: "Q",
+        .King: "K"
+    ]
+    static let suitNames: Dictionary<Suit, String> = [
+        .Spade: "S",
+        .Diamond: "D",
+        .Heart: "H",
+        .Club: "C",
+    ]
 }
 
 extension Card: Equatable {}
