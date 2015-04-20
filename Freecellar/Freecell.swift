@@ -35,11 +35,18 @@ struct Column {
     }
     
     func put(card: Card) -> Column? {
-        return rule.put(card, self)
+        if rule.consistent(card, top) {
+            return Column(cards + [card], rule)
+        }
+        return nil
     }
     
     func take(card: Card) -> Column? {
-        return rule.take(card, self)
+        if top == card {
+            return Column(Array(cards[0..<cards.count - 1]), rule)
+        } else {
+            return nil
+        }
     }
 }
 
@@ -50,50 +57,31 @@ func ==(lhs: Column, rhs: Column) -> Bool {
 }
 
 struct ColumnRule {
-    let put: (Card, Column) -> Column?
-    let take: (Card, Column) -> Column?
+    let consistent: (Card, Card?) -> Bool
 }
 
 let cellRule = ColumnRule(
-    put: { (card: Card, column: Column) -> Column? in
-        if let top = column.top {
-            return nil
-        } else {
-            return Column([card], column.rule)
-        }
-    },
-    take: { (card: Card, column: Column) -> Column? in
-        if column.top == card {
-            return Column([], column.rule)
-        } else {
-            return nil
-        }
+    consistent: { (over, under) in
+        return under == nil
     }
 )
 
-private func foundationConstraint(card: Card, on top: Card) -> Bool {
-    return (top.suit == card.suit) && (find(RANK_ORDER, top.rank)! + 1 == find(RANK_ORDER, card.rank)!)
+private func foundationConstraint(over: Card, on under: Card) -> Bool {
+    return (under.suit == over.suit) && (find(RANK_ORDER, under.rank)! + 1 == find(RANK_ORDER, over.rank)!)
 }
 
 let foundationRule = ColumnRule(
-    put: { (card: Card, column: Column) -> Column? in
-        if let top = column.top {
-            return foundationConstraint(card, on: top) ? Column(column.cards + [card], column.rule) : nil
+    consistent: { (over, under) in
+        if let under = under {
+            return foundationConstraint(over, on: under)
         } else {
-            return card.rank == Rank.Ace ? Column([card], column.rule) : nil
-        }
-    },
-    take: { (card: Card, column: Column) -> Column? in
-        if column.top == card {
-            return Column(Array(column.cards[0..<column.cards.count - 1]), column.rule)
-        } else {
-            return nil
+            return over.rank == Rank.Ace
         }
     }
 )
 
-private func cascadeConstraint(card: Card, on top: Card) -> Bool {
-    return alternativeColor(top.suit, card.suit) && (find(RANK_ORDER, top.rank)! - 1 == find(RANK_ORDER, card.rank)!)
+private func cascadeConstraint(over: Card, on under: Card) -> Bool {
+    return alternativeColor(under.suit, over.suit) && (find(RANK_ORDER, under.rank)! - 1 == find(RANK_ORDER, over.rank)!)
 }
 
 private func alternativeColor(a: Suit, b: Suit) -> Bool {
@@ -101,18 +89,11 @@ private func alternativeColor(a: Suit, b: Suit) -> Bool {
 }
 
 let cascadeRule = ColumnRule(
-    put: { (card: Card, column: Column) -> Column? in
-        if let top = column.top {
-            return cascadeConstraint(card, on: top) ? Column(column.cards + [card], column.rule) : nil
+    consistent: { (over, under) in
+        if let under = under {
+            return cascadeConstraint(over, on: under)
         } else {
-            return Column([card], column.rule)
-        }
-    },
-    take: { (card: Card, column: Column) -> Column? in
-        if column.top == card {
-            return Column(Array(column.cards[0..<column.cards.count - 1]), column.rule)
-        } else {
-            return nil
+            return true
         }
     }
 )
