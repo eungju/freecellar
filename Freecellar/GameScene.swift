@@ -198,6 +198,9 @@ class GameScene: SKScene {
             }
             pickedNode.setScale(1)
             hand = nil
+            if (freecell.isDone) {
+                startGame()
+            }
         } else {
             let node = nodeAtPoint(theEvent.locationInNode(self))
             if let cardNode = node as? CardNode where freecell.pick(cardNode.card, from: cardNode.columnNode.ref) != nil {
