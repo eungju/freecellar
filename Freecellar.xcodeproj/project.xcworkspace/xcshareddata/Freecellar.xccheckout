@@ -7,14 +7,14 @@
 	<key>IDESourceControlProjectIdentifier</key>
 	<string>14C01EC8-D5C8-4325-8423-58542F6AB180</string>
 	<key>IDESourceControlProjectName</key>
-	<string>project</string>
+	<string>Freecellar</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>C56E9CC494A8D071D108300AC4B697C8141698F7</key>
 		<string>github.com:eungju/freecellar.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>Freecellar.xcodeproj/project.xcworkspace</string>
+	<string>Freecellar.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>C56E9CC494A8D071D108300AC4B697C8141698F7</key>

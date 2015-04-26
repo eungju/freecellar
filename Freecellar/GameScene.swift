@@ -91,25 +91,33 @@ struct Hand {
 }
 
 class GameScene: SKScene {
-    let tablePadding = CGSizeMake(38, 198)
+    let tablePadding = CGSizeMake(33, 33)
     let columnSpace = CGSizeMake(10, 30)
-    let cardSpace = CGSizeMake(14, 24)
+    let cardSpace = CGSizeMake(15, 30)
     let cardSize = CGSizeMake(113, 157)
-    let table = SKSpriteNode()
-    var freecell = Freecell(seed: 1)
+    
+    var table = SKSpriteNode()
+    var cardNodes: [String: CardNode] = [:]
+    var cascadeNodes: [CascadeNode] = []
+    var cellNodes: [CellNode] = []
+    var foundationNodes: [FoundationNode] = []
     var hand: Hand?
+    
+    var freecell = Freecell(seed: 1)
     
     override func didMoveToView(view: SKView) {
         backgroundColor = SKColor.grayColor()
-        let cellSize = cardSize
-        let foundationSize = cardSize
-        let cascadeSize = CGSizeMake(cardSize.width, cardSize.height + cardSpace.height * (7 - 1))
+        let cellSize = self.cardSize
+        let foundationSize = self.cardSize
+        let cascadeSize = CGSizeMake(self.cardSize.width, cardSize.height + cardSpace.height * (13 - 1))
         let tableSize = CGSizeMake(cascadeSize.width * 8 + columnSpace.width * (8 - 1) + tablePadding.width * 2,
                                    cellSize.height + columnSpace.height + cascadeSize.height + tablePadding.height * 2)
+        println(tableSize)
         let toTable = CGAffineTransformMakeTranslation(-tableSize.width * 0.5, -tableSize.height * 0.5)
-        let cascadeOrigin = CGPointApplyAffineTransform(CGPointMake(tablePadding.width + cascadeSize.width / 2, tablePadding.height + cascadeSize.height - cardSize.height / 2), toTable)
-        let cellOrigin = CGPointApplyAffineTransform(CGPointMake(tablePadding.width + cellSize.width / 2, tablePadding.height + cascadeSize.height + columnSpace.height + cellSize.height / 2), toTable)
-        let foundationOrigin = CGPointApplyAffineTransform(CGPointMake(tablePadding.width + cellSize.width * 4 + columnSpace.width * 4 + foundationSize.width / 2, tablePadding.height + cascadeSize.height + columnSpace.height + foundationSize.height / 2), toTable)
+        let cascadeOrigin = CGPointApplyAffineTransform(CGPointMake(tablePadding.width + cascadeSize.width * 0.5, tablePadding.height + cascadeSize.height - cardSize.height * 0.5), toTable)
+        let cellOrigin = CGPointApplyAffineTransform(CGPointMake(tablePadding.width + cellSize.width * 0.5, tablePadding.height + cascadeSize.height + columnSpace.height + cellSize.height * 0.5), toTable)
+        let foundationOrigin = CGPointApplyAffineTransform(CGPointMake(tablePadding.width + cellSize.width * 4 + columnSpace.width * 4 + foundationSize.width * 0.5, tablePadding.height + cascadeSize.height + columnSpace.height + foundationSize.height * 0.5), toTable)
+
         table.color = SKColor(red: 0, green: 0.4, blue: 0.1, alpha: 1)
         table.size = tableSize
         table.name = "table"
@@ -119,29 +127,48 @@ class GameScene: SKScene {
         let cardFront = CardFront()
 
         for (index, cell) in enumerate(freecell.cells) {
-            let mark = CellNode(index: index)
-            mark.position = CGPointApplyAffineTransform(cellOrigin, CGAffineTransformMakeTranslation((cellSize.width + columnSpace.width) * CGFloat(index), 0))
-            mark.zPosition = table.zPosition + 1
-            table.addChild(mark)
+            let node = CellNode(index: index)
+            cellNodes.append(node)
+            node.position = CGPointApplyAffineTransform(cellOrigin, CGAffineTransformMakeTranslation((cellSize.width + columnSpace.width) * CGFloat(index), 0))
+            node.zPosition = table.zPosition + 1
+            table.addChild(node)
         }
 
         for (index, foundation) in enumerate(freecell.foundations) {
-            let mark = FoundationNode(index: index)
-            mark.position = CGPointApplyAffineTransform(foundationOrigin, CGAffineTransformMakeTranslation((foundationSize.width + columnSpace.width) * CGFloat(index), 0))
-            mark.zPosition = table.zPosition + 1
-            table.addChild(mark)
+            let node = FoundationNode(index: index)
+            foundationNodes.append(node)
+            node.position = CGPointApplyAffineTransform(foundationOrigin, CGAffineTransformMakeTranslation((foundationSize.width + columnSpace.width) * CGFloat(index), 0))
+            node.zPosition = table.zPosition + 1
+            table.addChild(node)
         }
 
         for (index, cascade) in enumerate(freecell.cascades) {
-            let mark = CascadeNode(index: index)
-            mark.position = CGPointApplyAffineTransform(cascadeOrigin, CGAffineTransformMakeTranslation((cascadeSize.width + columnSpace.width) * CGFloat(index), 0))
-            mark.zPosition = table.zPosition + 1
-            table.addChild(mark)
+            let node = CascadeNode(index: index)
+            cascadeNodes.append(node)
+            node.position = CGPointApplyAffineTransform(cascadeOrigin, CGAffineTransformMakeTranslation((cascadeSize.width + columnSpace.width) * CGFloat(index), 0))
+            node.zPosition = table.zPosition + 1
+            table.addChild(node)
             for (row, card) in enumerate(cascade.cards) {
-                let front = CardNode(card: card, columnNode: mark, frontTexture: cardFront.texture(card.name))
-                front.position = CGPointApplyAffineTransform(cascadeOrigin, CGAffineTransformMakeTranslation((cascadeSize.width + columnSpace.width) * CGFloat(index), -cardSpace.height * CGFloat(row)))
-                front.zPosition = mark.zPosition + CGFloat(1 + row)
-                table.addChild(front)
+                let cardNode = CardNode(card: card, columnNode: node, frontTexture: cardFront.texture(card.name))
+                cardNodes[card.name] = cardNode
+                cardNode.hidden = true
+                addChild(cardNode)
+            }
+        }
+        
+        startGame()
+    }
+    
+    func startGame() {
+        freecell = Freecell(seed: Int(arc4random_uniform(32000)) + 1)
+        for (index, cascade) in enumerate(freecell.cascades) {
+            let columnNode = cascadeNodes[index]
+            for (row, card) in enumerate(cascade.cards) {
+                let cardNode = cardNodes[card.name]!
+                cardNode.hidden = false
+                cardNode.columnNode = columnNode
+                cardNode.position = CGPointApplyAffineTransform(columnNode.position, CGAffineTransformMakeTranslation(0, -cardSpace.height * CGFloat(row)))
+                cardNode.zPosition = columnNode.zPosition + CGFloat(1 + row)
             }
         }
     }
