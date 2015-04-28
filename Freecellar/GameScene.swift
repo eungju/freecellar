@@ -117,7 +117,7 @@ class GameScene: SKScene {
         let cascadeOrigin = CGPointApplyAffineTransform(CGPointMake(tablePadding.width + cascadeSize.width * 0.5, tablePadding.height + cascadeSize.height - cardSize.height * 0.5), toTable)
         let cellOrigin = CGPointApplyAffineTransform(CGPointMake(tablePadding.width + cellSize.width * 0.5, tablePadding.height + cascadeSize.height + columnSpace.height + cellSize.height * 0.5), toTable)
         let foundationOrigin = CGPointApplyAffineTransform(CGPointMake(tablePadding.width + cellSize.width * 4 + columnSpace.width * 4 + foundationSize.width * 0.5, tablePadding.height + cascadeSize.height + columnSpace.height + foundationSize.height * 0.5), toTable)
-
+        
         table.color = SKColor(red: 0, green: 0.4, blue: 0.1, alpha: 1)
         table.size = tableSize
         table.name = "table"
@@ -161,14 +161,17 @@ class GameScene: SKScene {
     
     func startGame() {
         freecell = Freecell(seed: Int(arc4random_uniform(32000)) + 1)
+        var i = 0
         for (index, cascade) in enumerate(freecell.cascades) {
             let columnNode = cascadeNodes[index]
             for (row, card) in enumerate(cascade.cards) {
                 let cardNode = cardNodes[card.name]!
-                cardNode.hidden = false
                 cardNode.columnNode = columnNode
-                cardNode.position = CGPointApplyAffineTransform(columnNode.position, CGAffineTransformMakeTranslation(0, -cardSpace.height * CGFloat(row)))
+                cardNode.hidden = false
                 cardNode.zPosition = columnNode.zPosition + CGFloat(1 + row)
+                let moveTo = CGPointApplyAffineTransform(columnNode.position, CGAffineTransformMakeTranslation(0, -cardSpace.height * CGFloat(row)))
+                cardNode.runAction(SKAction.sequence([SKAction.waitForDuration(0.9 / 52 * Double(i)), SKAction.moveTo(moveTo, duration: 0.1)]))
+                i++
             }
         }
     }
@@ -184,17 +187,19 @@ class GameScene: SKScene {
                 columnNode = node.columnNode
             }
             if let targetNode = columnNode, let nextState = freecell.move(pickedNode.card, from: pickedNode.columnNode.ref, to: targetNode.ref) {
-                if let cascadeNode = targetNode as? CascadeNode {
-                    pickedNode.position = CGPointApplyAffineTransform(targetNode.position, CGAffineTransformMakeTranslation(0, -cardSpace.height * CGFloat(targetNode.ref.get(freecell).height)))
-                } else {
-                    pickedNode.position = targetNode.position
-                }
-                pickedNode.zPosition = targetNode.zPosition + CGFloat(targetNode.ref.get(freecell).height + 1)
                 pickedNode.columnNode = targetNode
+                pickedNode.zPosition = targetNode.zPosition + CGFloat(targetNode.ref.get(freecell).height + 1)
+                let moveTo: CGPoint
+                if let cascadeNode = targetNode as? CascadeNode {
+                    moveTo = CGPointApplyAffineTransform(targetNode.position, CGAffineTransformMakeTranslation(0, -cardSpace.height * CGFloat(targetNode.ref.get(freecell).height)))
+                } else {
+                    moveTo = targetNode.position
+                }
+                pickedNode.runAction(SKAction.moveTo(moveTo, duration: 0.1))
                 freecell = nextState
             } else {
-                pickedNode.position = grabbed.position
                 pickedNode.zPosition = grabbed.zPosition
+                pickedNode.runAction(SKAction.moveTo(grabbed.position, duration: 0.1))
             }
             pickedNode.setScale(1)
             hand = nil
@@ -205,7 +210,7 @@ class GameScene: SKScene {
             let node = nodeAtPoint(theEvent.locationInNode(self))
             if let cardNode = node as? CardNode where freecell.pick(cardNode.card, from: cardNode.columnNode.ref) != nil {
                 hand = Hand(node: cardNode, position: cardNode.position, zPosition: cardNode.zPosition)
-                cardNode.zPosition = 1 + 54
+                cardNode.zPosition = 1 + 52 + 1
                 cardNode.setScale(1.1)
             }
         }
