@@ -19,10 +19,26 @@ class CardNode: SKSpriteNode {
         super.init(texture: frontTexture, color: nil, size: CGSizeMake(372, 526))
         texture = frontTexture
         name = "card-" + card.name
+        color = SKColor(red: 1, green: 0.5, blue: 0.0, alpha: 1)
     }
     
     required init(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    var highlighted: Bool {
+        get {
+            return colorBlendFactor != 0
+        }
+        set(highlight) {
+            if (highlight) {
+                setScale(1.1)
+                colorBlendFactor = 0.5
+            } else {
+                setScale(1)
+                colorBlendFactor = 0
+            }
+        }
     }
 }
 
@@ -186,22 +202,26 @@ class GameScene: SKScene {
             } else if let node = nodes.last as? CardNode {
                 columnNode = node.columnNode
             }
-            if let targetNode = columnNode, let nextState = freecell.move(pickedNode.card, from: pickedNode.columnNode.ref, to: targetNode.ref) {
+            if let targetNode = columnNode where targetNode !== pickedNode.columnNode, let nextState = freecell.move(pickedNode.card, from: pickedNode.columnNode.ref, to: targetNode.ref) {
                 pickedNode.columnNode = targetNode
-                pickedNode.zPosition = targetNode.zPosition + CGFloat(targetNode.ref.get(freecell).height + 1)
-                let moveTo: CGPoint
+                let destPos: CGPoint
                 if let cascadeNode = targetNode as? CascadeNode {
-                    moveTo = CGPointApplyAffineTransform(targetNode.position, CGAffineTransformMakeTranslation(0, -cardSpace.height * CGFloat(targetNode.ref.get(freecell).height)))
+                    destPos = CGPointApplyAffineTransform(targetNode.position, CGAffineTransformMakeTranslation(0, -cardSpace.height * CGFloat(targetNode.ref.get(freecell).height)))
                 } else {
-                    moveTo = targetNode.position
+                    destPos = targetNode.position
                 }
-                pickedNode.runAction(SKAction.moveTo(moveTo, duration: 0.1))
+                let destZ = targetNode.zPosition + CGFloat(targetNode.ref.get(self.freecell).height + 1)
+                pickedNode.runAction(SKAction.moveTo(destPos, duration: 0.2), completion: {
+                    pickedNode.zPosition = destZ
+                })
                 freecell = nextState
             } else {
-                pickedNode.zPosition = grabbed.zPosition
-                pickedNode.runAction(SKAction.moveTo(grabbed.position, duration: 0.1))
+                let destPos = grabbed.zPosition
+                pickedNode.runAction(SKAction.moveTo(grabbed.position, duration: 0.2), completion: {
+                    pickedNode.zPosition = destPos
+                })
             }
-            pickedNode.setScale(1)
+            pickedNode.highlighted = false
             hand = nil
             if (freecell.isDone) {
                 startGame()
@@ -211,7 +231,7 @@ class GameScene: SKScene {
             if let cardNode = node as? CardNode where freecell.pick(cardNode.card, from: cardNode.columnNode.ref) != nil {
                 hand = Hand(node: cardNode, position: cardNode.position, zPosition: cardNode.zPosition)
                 cardNode.zPosition = 1 + 52 + 1
-                cardNode.setScale(1.1)
+                cardNode.highlighted = true
             }
         }
     }

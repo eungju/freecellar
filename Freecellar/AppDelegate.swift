@@ -41,7 +41,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         skView.ignoresSiblingOrder = true
         skView.presentScene(scene)
 
-        window.acceptsMouseMovedEvents = true
+        //window.acceptsMouseMovedEvents = true
         window.makeFirstResponder(scene)
     }
     
