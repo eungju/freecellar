@@ -101,7 +101,7 @@ class CascadeNode: ColumnNode {
 }
 
 struct Hand {
-    let node: CardNode
+    let nodes: [CardNode]
     let position: CGPoint
     let zPosition: CGFloat
 }
@@ -194,7 +194,7 @@ class GameScene: SKScene {
     
     override func mouseDown(theEvent: NSEvent) {
         if let grabbed = hand {
-            let pickedNode = grabbed.node
+            let pickedNode = grabbed.nodes.first!
             let nodes = nodesAtPoint(theEvent.locationInNode(self)).filter({ $0 !== pickedNode && ($0 is CardNode || $0 is ColumnNode) }) as! [SKNode]
             var columnNode: ColumnNode? = nil
             if let node = nodes.last as? ColumnNode {
@@ -202,26 +202,27 @@ class GameScene: SKScene {
             } else if let node = nodes.last as? CardNode {
                 columnNode = node.columnNode
             }
+            let destPos: CGPoint
+            let destZ: CGFloat
             if let targetNode = columnNode where targetNode !== pickedNode.columnNode, let nextState = freecell.move(pickedNode.card, from: pickedNode.columnNode.ref, to: targetNode.ref) {
                 pickedNode.columnNode = targetNode
-                let destPos: CGPoint
                 if let cascadeNode = targetNode as? CascadeNode {
                     destPos = CGPointApplyAffineTransform(targetNode.position, CGAffineTransformMakeTranslation(0, -cardSpace.height * CGFloat(targetNode.ref.get(freecell).height)))
                 } else {
                     destPos = targetNode.position
                 }
-                let destZ = targetNode.zPosition + CGFloat(targetNode.ref.get(self.freecell).height + 1)
-                pickedNode.runAction(SKAction.moveTo(destPos, duration: 0.2), completion: {
-                    pickedNode.zPosition = destZ
-                })
+                destZ = targetNode.zPosition + CGFloat(targetNode.ref.get(self.freecell).height + 1)
                 freecell = nextState
             } else {
-                let destPos = grabbed.zPosition
-                pickedNode.runAction(SKAction.moveTo(grabbed.position, duration: 0.2), completion: {
-                    pickedNode.zPosition = destPos
+                destPos = grabbed.position
+                destZ = grabbed.zPosition
+            }
+            for (i, node) in enumerate(grabbed.nodes) {
+                node.highlighted = false
+                node.runAction(SKAction.moveTo(CGPointApplyAffineTransform(destPos, CGAffineTransformMakeTranslation(0, -cardSpace.height * CGFloat(i))), duration: 0.1), completion: {
+                    node.zPosition = destZ
                 })
             }
-            pickedNode.highlighted = false
             hand = nil
             if (freecell.isDone) {
                 startGame()
@@ -229,7 +230,7 @@ class GameScene: SKScene {
         } else {
             let node = nodeAtPoint(theEvent.locationInNode(self))
             if let cardNode = node as? CardNode where freecell.pick(cardNode.card, from: cardNode.columnNode.ref) != nil {
-                hand = Hand(node: cardNode, position: cardNode.position, zPosition: cardNode.zPosition)
+                hand = Hand(nodes: [cardNode], position: cardNode.position, zPosition: cardNode.zPosition)
                 cardNode.zPosition = 1 + 52 + 1
                 cardNode.highlighted = true
             }
@@ -238,7 +239,10 @@ class GameScene: SKScene {
     
     override func mouseMoved(theEvent: NSEvent) {
         if let grabbed = hand {
-            grabbed.node.position = theEvent.locationInNode(grabbed.node.parent)
+            let curPos = theEvent.locationInNode(table)
+            for (i, node) in enumerate(grabbed.nodes) {
+                node.position = CGPointApplyAffineTransform(curPos, CGAffineTransformMakeTranslation(0, -cardSpace.height * CGFloat(i)))
+            }
         }
     }
 }
