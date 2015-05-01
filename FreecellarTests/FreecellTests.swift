@@ -94,6 +94,19 @@ class CascadeTests: XCTestCase {
         let noneEmpty = Column([_AS, _2S], cascadeRule)
         XCTAssertEqual(noneEmpty.take(_2S)!, Column([_AS], cascadeRule))
     }
+    
+    func testTableau() {
+        XCTAssertEqual(tableau(Column([], cascadeRule)), [])
+
+        XCTAssertEqual(tableau(Column([_AS], cascadeRule)), [_AS])
+        XCTAssertEqual(tableau(Column([_AS, _2D], cascadeRule)), [_2D])
+
+        XCTAssertEqual(tableau(Column([_2S, _AS], cascadeRule)), [_AS])
+        XCTAssertEqual(tableau(Column([_2D, _AS], cascadeRule)), [_2D, _AS])
+
+        XCTAssertEqual(tableau(Column([_2S, _2D, _AS], cascadeRule)), [_2D, _AS])
+        XCTAssertEqual(tableau(Column([_3C, _2D, _AS], cascadeRule)), [_3C, _2D, _AS])
+    }
 }
 
 class DeckTests: XCTestCase {

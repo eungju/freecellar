@@ -23,15 +23,19 @@ struct Column {
     }
     
     var top: Card? {
-        return self.cards.last
+        return cards.last
     }
     
     var height: Int {
-        return self.cards.count
+        return cards.count
+    }
+    
+    var isOpen: Bool {
+        return cards.isEmpty
     }
     
     func has(card: Card) -> Bool {
-        return contains(self.cards, card)
+        return contains(cards, card)
     }
     
     func put(card: Card) -> Column? {
@@ -97,6 +101,17 @@ let cascadeRule = ColumnRule(
         }
     }
 )
+
+func tableau(column: Column) -> [Card] {
+    if let over = column.top, let remaining = column.take(over) {
+        if let under = remaining.top where column.rule.consistent(over, under) {
+            return tableau(remaining) + [over]
+        } else {
+            return [over]
+        }
+    }
+    return []
+}
 
 class Random {
     var seed: Int
