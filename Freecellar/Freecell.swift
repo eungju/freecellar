@@ -151,6 +151,7 @@ struct Freecell {
     let cascades: [Column]
     let foundations: [Column]
     let cells: [Column]
+    let hand: [Card]
 
     init(cards: [Card]) {
         cascades = (0..<8).map({ i in
@@ -158,28 +159,32 @@ struct Freecell {
         })
         foundations = (0..<4).map({ i in Column([], foundationRule) })
         cells = (0..<4).map({ i in Column([], cellRule) })
+        hand = []
     }
     
     init(seed: Int) {
         self.init(cards: Deck(seed: seed).cards)
     }
     
-    init(cascades: [Column], foundations: [Column], cells: [Column]) {
+    init(cascades: [Column], foundations: [Column], cells: [Column], hand: [Card]) {
         self.cascades = cascades
         self.foundations = foundations
         self.cells = cells
+        self.hand = hand
     }
     
     func pick(card: Card, from: Lens<Freecell, Column>) -> Freecell? {
-        return from.try({ $0.take(card) })(self)
+        return from.try({ $0.take(card) })(self).map { _hand.set([card], $0) }
     }
     
-    func put(card: Card, to: Lens<Freecell, Column>) -> Freecell? {
-        return to.try({ $0.put(card) })(self)
+    func put(to: Lens<Freecell, Column>) -> Freecell? {
+        return _hand.get(self).reduce(_hand.set([], self), combine: { (game, card) in
+            return game.flatMap(to.try({ $0.put(card) }))
+        })
     }
     
     func move(card: Card, from: Lens<Freecell, Column>, to: Lens<Freecell, Column>) -> Freecell? {
-        return pick(card, from: from)?.put(card, to: to)
+        return pick(card, from: from)?.put(to)
     }
     
     var isDone: Bool {
@@ -190,9 +195,10 @@ struct Freecell {
 extension Freecell: Equatable {}
 
 func ==(lhs: Freecell, rhs: Freecell) -> Bool {
-    return lhs.cascades == rhs.cascades && lhs.foundations == rhs.foundations && lhs.cells == rhs.cells
+    return lhs.cascades == rhs.cascades && lhs.foundations == rhs.foundations && lhs.cells == rhs.cells && lhs.hand == rhs.hand
 }
 
-let _cascades = Lens<Freecell, [Column]>(get: { $0.cascades }, set: { Freecell(cascades: $0, foundations: $1.foundations, cells: $1.cells) })
-let _cells = Lens<Freecell, [Column]>(get: { $0.cells }, set: { Freecell(cascades: $1.cascades, foundations: $1.foundations, cells: $0) })
-let _foundations = Lens<Freecell, [Column]>(get: { $0.foundations }, set: { Freecell(cascades: $1.cascades, foundations: $0, cells: $1.cells) })
+let _cascades = Lens<Freecell, [Column]>(get: { $0.cascades }, set: { Freecell(cascades: $0, foundations: $1.foundations, cells: $1.cells, hand: $1.hand) })
+let _cells = Lens<Freecell, [Column]>(get: { $0.cells }, set: { Freecell(cascades: $1.cascades, foundations: $1.foundations, cells: $0, hand: $1.hand) })
+let _foundations = Lens<Freecell, [Column]>(get: { $0.foundations }, set: { Freecell(cascades: $1.cascades, foundations: $0, cells: $1.cells, hand: $1.hand) })
+let _hand = Lens<Freecell, [Card]>(get: { $0.hand }, set: { Freecell(cascades: $1.cascades, foundations: $1.foundations, cells: $1.cells, hand: $0) })

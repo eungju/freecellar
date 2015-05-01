@@ -133,17 +133,17 @@ class FreecellTests: XCTestCase {
     }
     
     func testLegalMove() {
-        let freecell = Freecell(cascades: [Column([_AS], cascadeRule)], foundations: [Column([], foundationRule)], cells: [Column([], cellRule)])
-        XCTAssertEqual(freecell.move(_AS, from: _cascades >=> _subscript(0), to: _foundations >=> _subscript(0))!, Freecell(cascades: [Column([], cascadeRule)], foundations: [Column([_AS], foundationRule)], cells: [Column([], cellRule)]))
+        let freecell = Freecell(cascades: [Column([_AS], cascadeRule)], foundations: [Column([], foundationRule)], cells: [Column([], cellRule)], hand: [])
+        XCTAssertEqual(freecell.move(_AS, from: _cascades >=> _subscript(0), to: _foundations >=> _subscript(0))!, Freecell(cascades: [Column([], cascadeRule)], foundations: [Column([_AS], foundationRule)], cells: [Column([], cellRule)], hand: []))
     }
 
     func testIlegalMove() {
-        let freecell = Freecell(cascades: [Column([_AS, _2S], cascadeRule)], foundations: [Column([], foundationRule)], cells: [Column([], cellRule)])
+        let freecell = Freecell(cascades: [Column([_AS, _2S], cascadeRule)], foundations: [Column([], foundationRule)], cells: [Column([], cellRule)], hand: [])
         XCTAssert(freecell.move(_2S, from: _cascades >=> _subscript(0), to: _foundations >=> _subscript(0)) == nil)
     }
     
     func testDone() {
         XCTAssert(!Freecell(seed: 1).isDone)
-        XCTAssert(Freecell(cascades: [], foundations: SUIT_ORDER.map({ suit in Column(RANK_ORDER.map({ rank in Card(rank, suit) }), foundationRule) }), cells: []).isDone)
+        XCTAssert(Freecell(cascades: [], foundations: SUIT_ORDER.map({ suit in Column(RANK_ORDER.map({ rank in Card(rank, suit) }), foundationRule) }), cells: [], hand: []).isDone)
     }
 }
