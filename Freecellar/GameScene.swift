@@ -16,7 +16,7 @@ class CardNode: SKSpriteNode {
     init(card: Card, columnNode: ColumnNode, frontTexture: SKTexture) {
         self.card = card
         self.columnNode = columnNode
-        super.init(texture: frontTexture, color: nil, size: CGSizeMake(372, 526))
+        super.init(texture: frontTexture, color: NSColor.whiteColor(), size: CGSizeMake(372, 526))
         texture = frontTexture
         name = "card-" + card.name
         color = SKColor(red: 1, green: 0.5, blue: 0.0, alpha: 1)
@@ -49,7 +49,7 @@ class ColumnNode: SKShapeNode {
         self.ref = ref
         super.init()
         let border = SKShapeNode()
-        var path = CGPathCreateMutable()
+        let path = CGPathCreateMutable()
         CGPathAddRoundedRect(path, nil, CGRectInset(CGRect(origin: CGPointMake(113 * -0.5, 157 * -0.5), size: CGSizeMake(113, 157)), 2, 2), 4, 4)
         self.path = path
         self.lineWidth = 2
@@ -128,7 +128,7 @@ class GameScene: SKScene {
         let cascadeSize = CGSizeMake(self.cardSize.width, cardSize.height + cardSpace.height * (13 - 1))
         let tableSize = CGSizeMake(cascadeSize.width * 8 + columnSpace.width * (8 - 1) + tablePadding.width * 2,
                                    cellSize.height + columnSpace.height + cascadeSize.height + tablePadding.height * 2)
-        println(tableSize)
+        print(tableSize)
         let toTable = CGAffineTransformMakeTranslation(-tableSize.width * 0.5, -tableSize.height * 0.5)
         let cascadeOrigin = CGPointApplyAffineTransform(CGPointMake(tablePadding.width + cascadeSize.width * 0.5, tablePadding.height + cascadeSize.height - cardSize.height * 0.5), toTable)
         let cellOrigin = CGPointApplyAffineTransform(CGPointMake(tablePadding.width + cellSize.width * 0.5, tablePadding.height + cascadeSize.height + columnSpace.height + cellSize.height * 0.5), toTable)
@@ -142,7 +142,7 @@ class GameScene: SKScene {
 
         let cardFront = CardFront()
 
-        for (index, cell) in enumerate(freecell.cells) {
+        for (index, cell) in freecell.cells.enumerate() {
             let node = CellNode(index: index)
             cellNodes.append(node)
             node.position = CGPointApplyAffineTransform(cellOrigin, CGAffineTransformMakeTranslation((cellSize.width + columnSpace.width) * CGFloat(index), 0))
@@ -150,7 +150,7 @@ class GameScene: SKScene {
             table.addChild(node)
         }
 
-        for (index, foundation) in enumerate(freecell.foundations) {
+        for (index, foundation) in freecell.foundations.enumerate() {
             let node = FoundationNode(index: index)
             foundationNodes.append(node)
             node.position = CGPointApplyAffineTransform(foundationOrigin, CGAffineTransformMakeTranslation((foundationSize.width + columnSpace.width) * CGFloat(index), 0))
@@ -158,13 +158,13 @@ class GameScene: SKScene {
             table.addChild(node)
         }
 
-        for (index, cascade) in enumerate(freecell.cascades) {
+        for (index, cascade) in freecell.cascades.enumerate() {
             let node = CascadeNode(index: index)
             cascadeNodes.append(node)
             node.position = CGPointApplyAffineTransform(cascadeOrigin, CGAffineTransformMakeTranslation((cascadeSize.width + columnSpace.width) * CGFloat(index), 0))
             node.zPosition = table.zPosition + 1
             table.addChild(node)
-            for (row, card) in enumerate(cascade.cards) {
+            for (row, card) in cascade.cards.enumerate() {
                 let cardNode = CardNode(card: card, columnNode: node, frontTexture: cardFront.texture(card.name))
                 cardNodes[card.name] = cardNode
                 cardNode.hidden = true
@@ -178,9 +178,9 @@ class GameScene: SKScene {
     func startGame() {
         freecell = Freecell(seed: Int(arc4random_uniform(32000)) + 1)
         var i = 0
-        for (index, cascade) in enumerate(freecell.cascades) {
+        for (index, cascade) in freecell.cascades.enumerate() {
             let columnNode = cascadeNodes[index]
-            for (row, card) in enumerate(cascade.cards) {
+            for (row, card) in cascade.cards.enumerate() {
                 let cardNode = cardNodes[card.name]!
                 cardNode.columnNode = columnNode
                 cardNode.hidden = false
@@ -195,7 +195,7 @@ class GameScene: SKScene {
     override func mouseDown(theEvent: NSEvent) {
         if let grabbed = hand {
             let pickedNode = grabbed.nodes.first!
-            let nodes = nodesAtPoint(theEvent.locationInNode(self)).filter({ $0 !== pickedNode && ($0 is CardNode || $0 is ColumnNode) }) as! [SKNode]
+            let nodes = nodesAtPoint(theEvent.locationInNode(self)).filter({ $0 !== pickedNode && ($0 is CardNode || $0 is ColumnNode) }) 
             var columnNode: ColumnNode? = nil
             if let node = nodes.last as? ColumnNode {
                 columnNode = node
@@ -217,7 +217,7 @@ class GameScene: SKScene {
                 destPos = grabbed.position
                 destZ = grabbed.zPosition
             }
-            for (i, node) in enumerate(grabbed.nodes) {
+            for (i, node) in grabbed.nodes.enumerate() {
                 node.highlighted = false
                 node.runAction(SKAction.moveTo(CGPointApplyAffineTransform(destPos, CGAffineTransformMakeTranslation(0, -cardSpace.height * CGFloat(i))), duration: 0.1), completion: {
                     node.zPosition = destZ
@@ -240,7 +240,7 @@ class GameScene: SKScene {
     override func mouseMoved(theEvent: NSEvent) {
         if let grabbed = hand {
             let curPos = theEvent.locationInNode(table)
-            for (i, node) in enumerate(grabbed.nodes) {
+            for (i, node) in grabbed.nodes.enumerate() {
                 node.position = CGPointApplyAffineTransform(curPos, CGAffineTransformMakeTranslation(0, -cardSpace.height * CGFloat(i)))
             }
         }

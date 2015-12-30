@@ -16,7 +16,7 @@ enum Rank {
     case Ace, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King
 }
 
-struct Card: Printable {
+struct Card: CustomStringConvertible {
     let rank: Rank
     let suit: Suit
     

@@ -16,7 +16,7 @@ struct Lens<A, B> {
         return { self.set(f(self.get($0)), $0) }
     }
     
-    func try(f: (B) -> B?) -> (A -> A?) {
+    func `try`(f: (B) -> B?) -> (A -> A?) {
         return {
             if let modifiedPart = f(self.get($0)) {
                 return self.set(modifiedPart, $0)
@@ -42,8 +42,8 @@ func >=><A, B, C>(lhs: Lens<A, B>, rhs: Lens<B, C>) -> Lens<A, C> {
 func _subscript<T>(at: Int) -> Lens<[T], T> {
     return Lens<[T], T>(
         get: { a -> T in a[at] },
-        set: { (newB, a) -> [T] in
-            map(enumerate(a)) { (i, oldB) in return i == at ? newB : oldB }
+        set: { newB, a -> [T] in
+            a.enumerate().map { (i, oldB) in return i == at ? newB : oldB }
         }
     )
 }

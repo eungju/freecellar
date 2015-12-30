@@ -35,7 +35,7 @@ struct Column {
     }
     
     func has(card: Card) -> Bool {
-        return contains(cards, card)
+        return cards.contains(card)
     }
     
     func put(card: Card) -> Column? {
@@ -71,7 +71,7 @@ let cellRule = ColumnRule(
 )
 
 private func foundationConstraint(over: Card, on under: Card) -> Bool {
-    return (under.suit == over.suit) && (find(RANK_ORDER, under.rank)! + 1 == find(RANK_ORDER, over.rank)!)
+    return (under.suit == over.suit) && (RANK_ORDER.indexOf(under.rank)! + 1 == RANK_ORDER.indexOf(over.rank)!)
 }
 
 let foundationRule = ColumnRule(
@@ -85,11 +85,11 @@ let foundationRule = ColumnRule(
 )
 
 private func cascadeConstraint(over: Card, on under: Card) -> Bool {
-    return alternativeColor(under.suit, over.suit) && (find(RANK_ORDER, under.rank)! - 1 == find(RANK_ORDER, over.rank)!)
+    return alternativeColor(under.suit, b: over.suit) && (RANK_ORDER.indexOf(under.rank)! - 1 == RANK_ORDER.indexOf(over.rank)!)
 }
 
 private func alternativeColor(a: Suit, b: Suit) -> Bool {
-    return (contains(BLACK_SUITS, a) && contains(RED_SUITS, b)) || ((contains(BLACK_SUITS, b) && contains(RED_SUITS, a)))
+    return (BLACK_SUITS.contains(a) && RED_SUITS.contains(b)) || ((BLACK_SUITS.contains(b) && RED_SUITS.contains(a)))
 }
 
 let cascadeRule = ColumnRule(
@@ -132,8 +132,8 @@ struct Deck {
     init(seed: Int) {
         let random = Random(seed: seed)
         var cards: [Card] = []
-        for rank in reverse(RANK_ORDER) {
-            for suit in reverse(SUIT_ORDER) {
+        for rank in Array(RANK_ORDER.reverse()) {
+            for suit in Array(SUIT_ORDER.reverse()) {
                 cards.append(Card(rank, suit))
             }
         }
@@ -174,12 +174,12 @@ struct Freecell {
     }
     
     func pick(card: Card, from: Lens<Freecell, Column>) -> Freecell? {
-        return from.try({ $0.take(card) })(self).map { _hand.set([card], $0) }
+        return from.`try`({ $0.take(card) })(self).map { _hand.set([card], $0) }
     }
     
     func put(to: Lens<Freecell, Column>) -> Freecell? {
         return _hand.get(self).reduce(_hand.set([], self), combine: { (game, card) in
-            return game.flatMap(to.try({ $0.put(card) }))
+            return game.flatMap(to.`try`({ $0.put(card) }))
         })
     }
     
